@@ -19,6 +19,15 @@
     "ctaText": "wirelesssolution.asia",
     "durationSeconds": 5
   },
+  "duringPlayback": {
+    "enabled": true,
+    "displayMode": "both",
+    "badge": "SPONSORED",
+    "title": "Karaoke Now — Wireless Solution Asia",
+    "subtitle": "โฆษณาแบนเนอร์ซ้อนทับระหว่างเล่นเพลง (ปรับแต่งข้อความ รูปภาพ และโหมด text / image / both ได้ที่ ads.json บน GitHub)",
+    "imageUrl": "",
+    "ctaText": "wirelesssolution.asia"
+  },
   "remoteBanner": {
     "enabled": true,
     "displayMode": "both",

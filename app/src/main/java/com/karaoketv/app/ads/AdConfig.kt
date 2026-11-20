@@ -17,6 +17,16 @@ data class AppOpenAdData(
     val durationSeconds: Int = 5
 )
 
+data class DuringPlaybackAdData(
+    val enabled: Boolean = true,
+    val displayMode: String = "both", // "text", "image", or "both"
+    val badge: String = "SPONSORED",
+    val title: String = "Karaoke Now — Wireless Solution Asia",
+    val subtitle: String = "พัฒนาโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด",
+    val imageUrl: String = "",
+    val ctaText: String = "wirelesssolution.asia"
+)
+
 data class RemoteBannerAdData(
     val enabled: Boolean = true,
     val displayMode: String = "both", // "text", "image", or "both"
@@ -38,6 +48,7 @@ data class AdConfig(
         subtitle = "สนับสนุนโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด",
         durationSeconds = 5
     ),
+    val duringPlayback: DuringPlaybackAdData = DuringPlaybackAdData(),
     val remoteBanner: RemoteBannerAdData = RemoteBannerAdData()
 )
 
