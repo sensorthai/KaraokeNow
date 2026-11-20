@@ -34,9 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Button
+import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.FilterChip
+import androidx.tv.material3.FilterChipDefaults
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import com.karaoketv.app.data.local.QueueItemEntity
@@ -198,11 +200,22 @@ fun ArtistsScreen(
 
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(ArtistIndexGroup.entries) { group ->
+                val isGroupSelected = selectedGroup == group
                 FilterChip(
-                    selected = selectedGroup == group,
-                    onClick = { selectedGroup = group }
+                    selected = isGroupSelected,
+                    onClick = { selectedGroup = group },
+                    colors = FilterChipDefaults.colors(
+                        containerColor = Color.White,
+                        contentColor = KaraokeColors.TextPrimary,
+                        selectedContainerColor = KaraokeColors.Primary,
+                        selectedContentColor = Color.White,
+                        focusedContainerColor = KaraokeColors.Primary.copy(alpha = 0.85f),
+                        focusedContentColor = Color.White,
+                        focusedSelectedContainerColor = Color(0xFFD97706),
+                        focusedSelectedContentColor = Color.White
+                    )
                 ) {
-                    Text(group.label)
+                    Text(group.label, fontWeight = if (isGroupSelected) FontWeight.Bold else FontWeight.Medium)
                 }
             }
         }
@@ -237,12 +250,12 @@ fun ArtistsScreen(
                     Column(
                         modifier = Modifier
                             .clip(RoundedCornerShape(14.dp))
-                            .background(Color(artist.avatarColorHex).copy(alpha = 0.22f))
+                            .background(if (isFav) Color(0xFFFFFBEB) else Color.White)
                             .padding(14.dp)
                     ) {
                         Text(
                             text = if (isFav) "★ ${artist.name}" else artist.name,
-                            color = KaraokeColors.TextPrimary,
+                            color = if (isFav) Color(0xFFB45309) else KaraokeColors.TextPrimary,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1
@@ -258,12 +271,26 @@ fun ArtistsScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(
                                 onClick = { onSelectArtist(artist) },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.colors(
+                                    containerColor = KaraokeColors.Primary,
+                                    contentColor = Color.White,
+                                    focusedContainerColor = Color(0xFFD97706),
+                                    focusedContentColor = Color.White
+                                )
                             ) {
-                                Text("ดูเพลง", fontSize = 12.sp)
+                                Text("ดูเพลง", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
-                            OutlinedButton(onClick = { onToggleFavoriteArtist(artist) }) {
-                                Text(if (isFav) "★ โปรด" else "☆ โปรด", fontSize = 12.sp)
+                            OutlinedButton(
+                                onClick = { onToggleFavoriteArtist(artist) },
+                                colors = ButtonDefaults.colors(
+                                    containerColor = if (isFav) Color(0xFFFEF3C7) else Color(0xFFF1F5F9),
+                                    contentColor = if (isFav) Color(0xFFB45309) else KaraokeColors.TextPrimary,
+                                    focusedContainerColor = KaraokeColors.Primary,
+                                    focusedContentColor = Color.White
+                                )
+                            ) {
+                                Text(if (isFav) "★ โปรด" else "☆ โปรด", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

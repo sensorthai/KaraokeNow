@@ -133,6 +133,13 @@
 
 ---
 
+## 📚 แคตตาล็อกคู่มือเพลง (Songbook PDF สำหรับพิมพ์)
+
+- ดาวน์โหลดไฟล์แคตตาล็อกเพลงทั้งหมด (**21,937 เพลง • 2,321 ศิลปิน** จัดกลุ่มตามชื่อนักร้อง พร้อมรหัสเพลง 5 หลักและชื่อเพลงครบถ้วน) เพื่อพิมพ์เป็นเล่มหรือเปิดดูบนมือถือ:  
+  👉 [`docs/KaraokeNow-Songbook.pdf`](docs/KaraokeNow-Songbook.pdf) (`https://github.com/sensorthai/KaraokeNow/raw/main/docs/KaraokeNow-Songbook.pdf`)
+
+---
+
 ## 🛠️ วิธี Build จากซอร์สโค้ด (สำหรับนักพัฒนา)
 
 ```bash
