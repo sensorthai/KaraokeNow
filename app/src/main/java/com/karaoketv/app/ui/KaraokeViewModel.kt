@@ -119,13 +119,13 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
                         launch {
                             ThumbnailCacheManager.preloadAll(getApplication(), dao.getAllThumbnailUrls())
                         }
-                        "อัปเดตเพลงจาก YouTube เข้า SQLite แล้ว $count เพลง"
+                        "อัปเดตเพลงใหม่แล้ว $count เพลง"
                     } else {
                         "ไม่พบเพลงใหม่จาก YouTube"
                     }
                 }
                 .onFailure {
-                    _statusBanner.value = "เชื่อมต่อ YouTube ไม่สำเร็จ ใช้ข้อมูลใน SQLite แทน"
+                    _statusBanner.value = "เชื่อมต่อ YouTube ไม่สำเร็จ ใช้คลังเพลงในเครื่องแทน"
                 }
             _isSyncingCatalog.value = false
         }

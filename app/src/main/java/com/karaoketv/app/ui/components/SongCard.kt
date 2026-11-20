@@ -120,8 +120,10 @@ fun SongCard(
             text = song.title,
             color = KaraokeColors.TextPrimary,
             fontSize = 15.sp,
+            lineHeight = 19.sp,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
+            minLines = 2,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
 

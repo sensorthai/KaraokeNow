@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,6 +21,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -39,6 +44,7 @@ import androidx.tv.material3.Card
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.FilterChip
 import androidx.tv.material3.FilterChipDefaults
+import androidx.tv.material3.Icon
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import com.karaoketv.app.data.local.QueueItemEntity
@@ -85,7 +91,7 @@ fun SongCatalogScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "รายชื่อเพลงใน SQLite (${filteredSongs.size} / ${songs.size} เพลง)",
+                text = "รายชื่อเพลง (${filteredSongs.size} / ${songs.size} เพลง)",
                 color = KaraokeColors.TextPrimary,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -273,9 +279,9 @@ fun ArtistsScreen(
                                 onClick = { onSelectArtist(artist) },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.colors(
-                                    containerColor = KaraokeColors.Primary,
-                                    contentColor = Color.White,
-                                    focusedContainerColor = Color(0xFFD97706),
+                                    containerColor = Color(0xFFE2E8F0),
+                                    contentColor = KaraokeColors.TextPrimary,
+                                    focusedContainerColor = KaraokeColors.Primary,
                                     focusedContentColor = Color.White
                                 )
                             ) {
@@ -545,7 +551,7 @@ fun QueueScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "คิวเพลงในเครื่อง (SQLite: ${queueItems.size} เพลง)",
+                text = "คิวเพลง (${queueItems.size} เพลง)",
                 color = KaraokeColors.TextPrimary,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -628,7 +634,18 @@ fun QueueScreen(
                                     )
                                 }
                             ) {
-                                Text(if (isFav) "❤️ โปรดแล้ว" else "🤍 โปรด")
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = if (isFav) Color(0xFFEF4444) else KaraokeColors.TextPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(if (isFav) "โปรดแล้ว" else "โปรด")
+                                }
                             }
                             if (!isPlaying) {
                                 Button(onClick = { onPlayQueueItem(item.id) }) {

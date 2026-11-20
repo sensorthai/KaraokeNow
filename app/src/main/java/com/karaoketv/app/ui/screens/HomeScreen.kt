@@ -78,7 +78,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = if (currentPlaying != null) {
-                            "${currentPlaying.artistName} • คิวรอเล่น $queueCount เพลง (SQLite)"
+                            "${currentPlaying.artistName} • คิวรอเล่น $queueCount เพลง"
                         } else {
                             "ค้นหาจาก YouTube ด้วยชื่อเพลง รายชื่อเพลง นักร้อง หรือสไตล์เพลง"
                         },
