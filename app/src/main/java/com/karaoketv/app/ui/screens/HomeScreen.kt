@@ -41,6 +41,7 @@ fun HomeScreen(
     currentPlaying: QueueItemEntity?,
     queueCount: Int,
     popularSongs: List<SongItem>,
+    hasPlayStats: Boolean = false,
     styles: List<MusicStyle>,
     artists: List<ArtistProfile>,
     favoriteIds: Set<String> = emptySet(),
@@ -94,7 +95,9 @@ fun HomeScreen(
         }
 
         item {
-            SectionTitle("เพลงฮิตคาราโอเกะ")
+            SectionTitle(
+                if (hasPlayStats) "เพลงฮิตคาราโอเกะ (จัดอันดับจากยอดเล่นสูงสุด)" else "เพลงฮิตคาราโอเกะ"
+            )
             Spacer(modifier = Modifier.height(12.dp))
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),

@@ -13,9 +13,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         SongCacheEntity::class,
         SearchHistoryEntity::class,
         FavoriteSongEntity::class,
-        FavoriteArtistEntity::class
+        FavoriteArtistEntity::class,
+        PlayStatEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class KaraokeDatabase : RoomDatabase() {
@@ -73,6 +74,26 @@ abstract class KaraokeDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `play_stats` (
+                        `videoId` TEXT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `artistName` TEXT NOT NULL,
+                        `styleTag` TEXT NOT NULL,
+                        `thumbnailUrl` TEXT NOT NULL,
+                        `songCode` TEXT NOT NULL DEFAULT '',
+                        `playCount` INTEGER NOT NULL DEFAULT 1,
+                        `lastPlayedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`videoId`)
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): KaraokeDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -80,7 +101,7 @@ abstract class KaraokeDatabase : RoomDatabase() {
                     KaraokeDatabase::class.java,
                     "karaoke_tv.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .build()
                     .also { INSTANCE = it }
             }

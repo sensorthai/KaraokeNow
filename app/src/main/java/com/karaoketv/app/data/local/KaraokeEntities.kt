@@ -67,3 +67,16 @@ data class FavoriteArtistEntity(
     val styleHint: String,
     val addedAt: Long = System.currentTimeMillis()
 )
+
+@Entity(tableName = "play_stats")
+data class PlayStatEntity(
+    @PrimaryKey
+    val videoId: String,
+    val title: String,
+    val artistName: String,
+    val styleTag: String,
+    val thumbnailUrl: String,
+    val songCode: String = "",
+    val playCount: Int = 1,
+    val lastPlayedAt: Long = System.currentTimeMillis()
+)

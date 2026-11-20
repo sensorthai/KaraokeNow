@@ -108,6 +108,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
     val searchResults by viewModel.searchResults.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
     val catalogSongs by viewModel.catalogSongs.collectAsState()
+    val topPlayedSongs by viewModel.topPlayedSongs.collectAsState()
     val dynamicArtists by viewModel.featuredArtists.collectAsState()
     val dynamicChannels by viewModel.dynamicChannels.collectAsState()
     val dynamicStyles by viewModel.musicStyles.collectAsState()
@@ -245,7 +246,12 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                         TvDestination.HOME -> HomeScreen(
                             currentPlaying = currentPlaying,
                             queueCount = waitingCount,
-                            popularSongs = catalogSongs.take(40),
+                            popularSongs = if (topPlayedSongs.isNotEmpty()) {
+                                (topPlayedSongs + catalogSongs).distinctBy { it.videoId }.take(40)
+                            } else {
+                                catalogSongs.take(40)
+                            },
+                            hasPlayStats = topPlayedSongs.isNotEmpty(),
                             styles = dynamicStyles,
                             artists = dynamicArtists,
                             favoriteIds = favoriteIds,

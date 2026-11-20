@@ -59,6 +59,22 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
     val catalogSongs: StateFlow<List<SongItem>> = repository.observeCatalogSongs()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), YouTubeRepository.demoCatalog)
 
+    val topPlayedSongs: StateFlow<List<SongItem>> = dao.observeTopPlayedSongs(40)
+        .map { rows ->
+            rows.map { stat ->
+                SongItem(
+                    videoId = stat.videoId,
+                    title = stat.title,
+                    artistName = stat.artistName,
+                    styleTag = stat.styleTag,
+                    thumbnailUrl = stat.thumbnailUrl,
+                    channelTitle = "",
+                    songCode = stat.songCode
+                )
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _isSyncingCatalog = MutableStateFlow(false)
     val isSyncingCatalog: StateFlow<Boolean> = _isSyncingCatalog.asStateFlow()
 

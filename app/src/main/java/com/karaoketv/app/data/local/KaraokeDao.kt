@@ -72,6 +72,7 @@ interface KaraokeDao {
         markAllPlayingAsPlayed()
         val nextPos = getMaxPosition() + 1
         insertQueueItem(item.copy(position = nextPos, status = QueueStatus.PLAYING))
+        recordPlay(item)
     }
 
     @Transaction
@@ -79,6 +80,7 @@ interface KaraokeDao {
         markAllPlayingAsPlayed()
         val next = getNextWaitingItem() ?: return null
         updateQueueStatus(next.id, QueueStatus.PLAYING)
+        recordPlay(next)
         return next.copy(status = QueueStatus.PLAYING)
     }
 
@@ -86,6 +88,52 @@ interface KaraokeDao {
     suspend fun playQueueItemNow(itemId: Long) {
         markAllPlayingAsPlayed()
         updateQueueStatus(itemId, QueueStatus.PLAYING)
+        getQueueItemById(itemId)?.let { recordPlay(it) }
+    }
+
+    @Query("SELECT * FROM queue_items WHERE id = :id LIMIT 1")
+    suspend fun getQueueItemById(id: Long): QueueItemEntity?
+
+    // --- Play Statistics ---
+
+    @Query("SELECT * FROM play_stats WHERE videoId = :videoId LIMIT 1")
+    suspend fun getPlayStat(videoId: String): PlayStatEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertPlayStat(stat: PlayStatEntity)
+
+    @Query("SELECT * FROM play_stats ORDER BY playCount DESC, lastPlayedAt DESC LIMIT :limit")
+    fun observeTopPlayedSongs(limit: Int = 40): Flow<List<PlayStatEntity>>
+
+    suspend fun recordPlay(item: QueueItemEntity) {
+        val existing = getPlayStat(item.videoId)
+        val now = System.currentTimeMillis()
+        if (existing != null) {
+            upsertPlayStat(
+                existing.copy(
+                    title = item.title,
+                    artistName = item.artistName,
+                    styleTag = item.styleTag,
+                    thumbnailUrl = item.thumbnailUrl,
+                    songCode = item.songCode.ifBlank { existing.songCode },
+                    playCount = existing.playCount + 1,
+                    lastPlayedAt = now
+                )
+            )
+        } else {
+            upsertPlayStat(
+                PlayStatEntity(
+                    videoId = item.videoId,
+                    title = item.title,
+                    artistName = item.artistName,
+                    styleTag = item.styleTag,
+                    thumbnailUrl = item.thumbnailUrl,
+                    songCode = item.songCode,
+                    playCount = 1,
+                    lastPlayedAt = now
+                )
+            )
+        }
     }
 
     // --- Song Cache / SQLite Catalog ---
