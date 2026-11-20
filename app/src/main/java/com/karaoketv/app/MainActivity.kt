@@ -272,6 +272,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                         TvDestination.SEARCH -> SearchScreen(
                             query = searchQuery,
                             selectedFilter = selectedFilter,
+                            catalogSongs = catalogSongs,
                             results = searchResults,
                             history = searchHistory,
                             isSearching = isSearching,

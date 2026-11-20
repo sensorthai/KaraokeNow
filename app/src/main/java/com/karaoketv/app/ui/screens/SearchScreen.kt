@@ -56,6 +56,7 @@ import com.karaoketv.app.ui.theme.KaraokeColors
 fun SearchScreen(
     query: String,
     selectedFilter: SearchFilter,
+    catalogSongs: List<SongItem> = emptyList(),
     results: List<SongItem>,
     history: List<SearchHistoryEntity>,
     isSearching: Boolean,
@@ -67,12 +68,37 @@ fun SearchScreen(
     onAddToQueue: (SongItem) -> Unit,
     onToggleFavorite: (SongItem) -> Unit = {}
 ) {
-    var showTvKeyboard by remember { mutableStateOf(true) }
+    var showTvKeyboard by remember { mutableStateOf(false) }
+
+    val displayedSongs = remember(catalogSongs, results, query, selectedFilter) {
+        val q = query.trim().lowercase()
+        val localMatches = if (q.isEmpty()) {
+            catalogSongs
+        } else {
+            catalogSongs.filter { song ->
+                when (selectedFilter) {
+                    SearchFilter.TITLE -> song.songCode.contains(q) || song.title.lowercase().contains(q)
+                    SearchFilter.ARTIST -> song.artistName.lowercase().contains(q)
+                    SearchFilter.STYLE -> song.styleTag.lowercase().contains(q)
+                    SearchFilter.ALL -> song.songCode.contains(q) ||
+                        song.title.lowercase().contains(q) ||
+                        song.artistName.lowercase().contains(q) ||
+                        song.styleTag.lowercase().contains(q) ||
+                        song.channelTitle.lowercase().contains(q)
+                }
+            }
+        }
+        if (results.isNotEmpty() && q.isNotEmpty()) {
+            (localMatches + results).distinctBy { it.videoId }
+        } else {
+            localMatches
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .padding(horizontal = 28.dp, vertical = 20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -80,17 +106,17 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "ค้นหาเพลงคาราโอเกะ",
+                text = "ค้นหาเพลงคาราโอเกะ (${displayedSongs.size} / ${catalogSongs.size} เพลง)",
                 color = KaraokeColors.TextPrimary,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
             OutlinedButton(onClick = { showTvKeyboard = !showTvKeyboard }) {
-                Text(if (showTvKeyboard) "ซ่อนแป้นพิมพ์รีโมท" else "แสดงแป้นพิมพ์รีโมท", fontSize = 12.sp)
+                Text(if (showTvKeyboard) "ซ่อนแป้นพิมพ์รีโมท" else "แป้นพิมพ์รีโมท", fontSize = 12.sp)
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -101,7 +127,7 @@ fun SearchScreen(
                 value = query,
                 onValueChange = onQueryChange,
                 singleLine = true,
-                placeholder = { Text("พิมพ์ชื่อเพลง, นักร้อง หรือรหัส 5 หลัก (เช่น 00001)...") },
+                placeholder = { Text("ค้นหาชื่อเพลง, นักร้อง, สไตล์, ช่อง หรือรหัส 5 หลัก...") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = { onSubmitSearch(query, selectedFilter) }
@@ -116,7 +142,7 @@ fun SearchScreen(
                 modifier = Modifier.weight(1f)
             )
             Button(onClick = { onSubmitSearch(query, selectedFilter) }) {
-                Text(if (isSearching) "กำลังค้นหา..." else "ค้นหา")
+                Text(if (isSearching) "กำลังค้นหา..." else "ค้นหา YouTube")
             }
             if (query.isNotEmpty()) {
                 OutlinedButton(onClick = { onQueryChange("") }) {
@@ -191,16 +217,16 @@ fun SearchScreen(
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 240.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                columns = GridCells.Adaptive(minSize = 250.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 24.dp),
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .background(KaraokeColors.Background)
             ) {
-                items(results, key = { it.videoId }) { song ->
+                items(displayedSongs, key = { it.videoId }) { song ->
                     SongCard(
                         song = song,
                         onPlayNow = onPlayNow,
