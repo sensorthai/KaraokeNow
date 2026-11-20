@@ -30,6 +30,7 @@ class LocalKaraokeServer(
     private val dao: KaraokeDao,
     private val repository: YouTubeRepository,
     private val onPlayTriggeredFromWeb: () -> Unit,
+    private val onNextTriggeredFromWeb: (QueueItemEntity) -> Unit = {},
     private val port: Int = 8888
 ) {
     private val gson = Gson()
@@ -271,7 +272,10 @@ class LocalKaraokeServer(
                     Triple("200 OK", "application/json; charset=utf-8", """{"ok":true}""")
                 }
                 method == "POST" && path == "/api/queue/next" -> {
-                    runBlocking { dao.advanceToNextSong() }
+                    val next = runBlocking { dao.advanceToNextSong() }
+                    if (next != null) {
+                        onNextTriggeredFromWeb(next)
+                    }
                     Triple("200 OK", "application/json; charset=utf-8", """{"ok":true}""")
                 }
                 method == "POST" && path == "/api/queue/remove" -> {

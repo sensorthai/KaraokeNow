@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.karaoketv.app.R
 import com.karaoketv.app.data.local.KaraokeDatabase
+import com.karaoketv.app.data.local.QueueItemEntity
 import com.karaoketv.app.data.repository.YouTubeRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,6 +39,9 @@ class KaraokeServerService : Service() {
             repository = repository,
             onPlayTriggeredFromWeb = {
                 _playTriggeredFromWeb.tryEmit(Unit)
+            },
+            onNextTriggeredFromWeb = { next ->
+                _nextSongTriggeredFromWeb.tryEmit(next)
             }
         ).also {
             it.start()
@@ -112,6 +116,9 @@ class KaraokeServerService : Service() {
 
         private val _playTriggeredFromWeb = MutableSharedFlow<Unit>(extraBufferCapacity = 4)
         val playTriggeredFromWeb: SharedFlow<Unit> = _playTriggeredFromWeb.asSharedFlow()
+
+        private val _nextSongTriggeredFromWeb = MutableSharedFlow<QueueItemEntity>(extraBufferCapacity = 4)
+        val nextSongTriggeredFromWeb: SharedFlow<QueueItemEntity> = _nextSongTriggeredFromWeb.asSharedFlow()
 
         fun start(context: Context) {
             val intent = Intent(context.applicationContext, KaraokeServerService::class.java)

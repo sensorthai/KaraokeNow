@@ -69,6 +69,14 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         viewModelScope.launch {
+            KaraokeServerService.nextSongTriggeredFromWeb.collect { next ->
+                if (AdConfigRepository.currentConfig.betweenSongs.enabled) {
+                    _pendingNextSongAd.value = next
+                }
+                _isPlayerFullscreen.value = true
+            }
+        }
+        viewModelScope.launch {
             FavoritesBackupManager.restoreIfEmpty(dao)
             val count = repository.seedBundledCatalogIfNeeded(getApplication())
             if (count == 0) {
@@ -300,8 +308,11 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
                 _pendingNextSongAd.value = null
                 _isPlayerFullscreen.value = false
                 _statusBanner.value = "เล่นครบทุกเพลงในคิวแล้ว"
-            } else if (AdConfigRepository.currentConfig.betweenSongs.enabled) {
-                _pendingNextSongAd.value = next
+            } else {
+                if (AdConfigRepository.currentConfig.betweenSongs.enabled) {
+                    _pendingNextSongAd.value = next
+                }
+                _isPlayerFullscreen.value = true
             }
         }
     }
