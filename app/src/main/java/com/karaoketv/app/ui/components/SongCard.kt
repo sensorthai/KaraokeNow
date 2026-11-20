@@ -1,7 +1,5 @@
 package com.karaoketv.app.ui.components
 
-import android.graphics.BitmapFactory
-import android.util.LruCache
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,44 +33,9 @@ import androidx.tv.material3.Button
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
+import com.karaoketv.app.data.local.ThumbnailCacheManager
 import com.karaoketv.app.data.model.SongItem
 import com.karaoketv.app.ui.theme.KaraokeColors
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.TimeUnit
-
-private object ThumbnailLoader {
-    private val cache = LruCache<String, ImageBitmap>(120)
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(8, TimeUnit.SECONDS)
-        .readTimeout(8, TimeUnit.SECONDS)
-        .build()
-
-    suspend fun load(url: String): ImageBitmap? {
-        cache.get(url)?.let { return it }
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val req = Request.Builder().url(url).build()
-                client.newCall(req).execute().use { resp ->
-                    if (!resp.isSuccessful) {
-                        android.util.Log.e("ThumbLoader", "HTTP ${resp.code} for $url")
-                        return@use null
-                    }
-                    val bytes = resp.body?.bytes() ?: return@use null
-                    val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return@use null
-                    android.util.Log.d("ThumbLoader", "Decoded ${bmp.width}x${bmp.height} for $url")
-                    val img = bmp.asImageBitmap()
-                    cache.put(url, img)
-                    img
-                }
-            }.onFailure {
-                android.util.Log.e("ThumbLoader", "Failed $url", it)
-            }.getOrNull()
-        }
-    }
-}
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -85,10 +47,15 @@ fun SongCard(
     onToggleFavorite: ((SongItem) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    var thumbnailBitmap by remember(song.thumbnailUrl) { mutableStateOf<ImageBitmap?>(null) }
+    val context = LocalContext.current
+    var thumbnailBitmap by remember(song.thumbnailUrl) {
+        mutableStateOf(ThumbnailCacheManager.getFromMemory(song.thumbnailUrl))
+    }
 
     LaunchedEffect(song.thumbnailUrl) {
-        thumbnailBitmap = ThumbnailLoader.load(song.thumbnailUrl)
+        if (thumbnailBitmap == null) {
+            thumbnailBitmap = ThumbnailCacheManager.load(context, song.thumbnailUrl)
+        }
     }
 
     Column(

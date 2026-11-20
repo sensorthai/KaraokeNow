@@ -10,6 +10,7 @@ import com.karaoketv.app.ads.AdConfigRepository
 import com.karaoketv.app.data.local.KaraokeDatabase
 import com.karaoketv.app.data.local.QueueItemEntity
 import com.karaoketv.app.data.local.SearchHistoryEntity
+import com.karaoketv.app.data.local.ThumbnailCacheManager
 import com.karaoketv.app.data.model.ArtistProfile
 import com.karaoketv.app.data.model.ChannelProfile
 import com.karaoketv.app.data.model.MusicStyle
@@ -62,6 +63,7 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
     val isSyncingCatalog: StateFlow<Boolean> = _isSyncingCatalog.asStateFlow()
 
     init {
+        ThumbnailCacheManager.init(application)
         KaraokeServerService.start(application)
         viewModelScope.launch {
             KaraokeServerService.playTriggeredFromWeb.collect {
@@ -82,6 +84,9 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
             if (count == 0) {
                 syncCatalogFromYouTube()
             }
+            launch {
+                ThumbnailCacheManager.preloadAll(getApplication(), dao.getAllThumbnailUrls())
+            }
         }
     }
 
@@ -96,6 +101,9 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
             repository.syncCatalogFromYouTube()
                 .onSuccess { count ->
                     _statusBanner.value = if (count > 0) {
+                        launch {
+                            ThumbnailCacheManager.preloadAll(getApplication(), dao.getAllThumbnailUrls())
+                        }
                         "อัปเดตเพลงจาก YouTube เข้า SQLite แล้ว $count เพลง"
                     } else {
                         "ไม่พบเพลงใหม่จาก YouTube"

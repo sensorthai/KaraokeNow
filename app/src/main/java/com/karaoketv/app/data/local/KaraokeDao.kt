@@ -102,6 +102,9 @@ interface KaraokeDao {
     @Query("SELECT videoId, songCode FROM song_cache")
     suspend fun getAllVideoIdCodes(): List<VideoCodeRow>
 
+    @Query("SELECT DISTINCT thumbnailUrl FROM song_cache WHERE thumbnailUrl != ''")
+    suspend fun getAllThumbnailUrls(): List<String>
+
     @Query("SELECT * FROM song_cache WHERE searchKey = :searchKey AND cachedAt >= :minTimestamp ORDER BY cachedAt DESC")
     suspend fun getCachedSongs(searchKey: String, minTimestamp: Long): List<SongCacheEntity>
 
