@@ -64,6 +64,7 @@ import com.karaoketv.app.data.model.SearchFilter
 import com.karaoketv.app.ui.KaraokeViewModel
 import com.karaoketv.app.ui.TvDestination
 import com.karaoketv.app.ui.components.AppOpenAdOverlay
+import com.karaoketv.app.ui.components.BetweenSongsAdOverlay
 import com.karaoketv.app.ui.screens.ArtistsScreen
 import com.karaoketv.app.ui.screens.ErasScreen
 import com.karaoketv.app.ui.screens.FavoritesScreen
@@ -118,6 +119,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
     val isSearching by viewModel.isSearching.collectAsState()
     val statusBanner by viewModel.statusBanner.collectAsState()
     val isPlayerFullscreen by viewModel.isPlayerFullscreen.collectAsState()
+    val pendingNextSongAd by viewModel.pendingNextSongAd.collectAsState()
 
     val waitingCount = activeQueue.count { it.status == QueueStatus.WAITING }
 
@@ -129,14 +131,26 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
     }
 
     if (isPlayerFullscreen && currentPlaying != null) {
-        BackHandler { viewModel.closePlayerFullscreen() }
-        PlayerScreen(
-            currentSong = currentPlaying!!,
-            waitingCount = waitingCount,
-            onSongEnded = { viewModel.onSongEnded() },
-            onSkipNext = { viewModel.skipToNext() },
-            onBackToMenu = { viewModel.closePlayerFullscreen() }
-        )
+        BackHandler {
+            viewModel.dismissBetweenSongsAd()
+            viewModel.closePlayerFullscreen()
+        }
+        val betweenSong = pendingNextSongAd
+        if (betweenSong != null && adConfig.betweenSongs.enabled) {
+            BetweenSongsAdOverlay(
+                nextSong = betweenSong,
+                ad = adConfig.betweenSongs,
+                onFinish = { viewModel.dismissBetweenSongsAd() }
+            )
+        } else {
+            PlayerScreen(
+                currentSong = currentPlaying!!,
+                waitingCount = waitingCount,
+                onSongEnded = { viewModel.onSongEnded() },
+                onSkipNext = { viewModel.skipToNext() },
+                onBackToMenu = { viewModel.closePlayerFullscreen() }
+            )
+        }
         return
     }
 

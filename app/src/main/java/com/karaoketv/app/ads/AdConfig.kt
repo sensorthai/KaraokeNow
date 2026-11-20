@@ -30,6 +30,14 @@ data class RemoteBannerAdData(
 
 data class AdConfig(
     val appOpen: AppOpenAdData = AppOpenAdData(),
+    val betweenSongs: AppOpenAdData = AppOpenAdData(
+        enabled = true,
+        displayMode = "both",
+        badge = "SPONSORED",
+        title = "พักเบรกคั่นรายการ — Karaoke Now",
+        subtitle = "สนับสนุนโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด",
+        durationSeconds = 5
+    ),
     val remoteBanner: RemoteBannerAdData = RemoteBannerAdData()
 )
 
@@ -44,8 +52,11 @@ object AdConfigRepository {
     var currentConfig: AdConfig = AdConfig()
         private set
 
+    @Volatile
+    private var hasFetchedOnce = false
+
     suspend fun refreshIfConfigured(): AdConfig {
-        if (REMOTE_AD_CONFIG_URL.isBlank()) return currentConfig
+        if (REMOTE_AD_CONFIG_URL.isBlank() || hasFetchedOnce) return currentConfig
         return withContext(Dispatchers.IO) {
             runCatching {
                 val conn = (URL(REMOTE_AD_CONFIG_URL).openConnection() as HttpURLConnection).apply {
@@ -57,6 +68,7 @@ object AdConfigRepository {
                     val json = conn.inputStream.bufferedReader().use { it.readText() }
                     gson.fromJson(json, AdConfig::class.java)?.also {
                         currentConfig = it
+                        hasFetchedOnce = true
                     } ?: currentConfig
                 } else {
                     currentConfig

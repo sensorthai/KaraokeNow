@@ -9,6 +9,16 @@
     "ctaText": "wirelesssolution.asia",
     "durationSeconds": 5
   },
+  "betweenSongs": {
+    "enabled": true,
+    "displayMode": "both",
+    "badge": "SPONSORED",
+    "title": "พักเบรกคั่นรายการ — Karaoke Now",
+    "subtitle": "สนับสนุนโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด • แก้ไขโฆษณาคั่นเพลงได้จากไฟล์ ads.json บน GitHub (โหลดครั้งเดียวตอนเปิดแอป)",
+    "imageUrl": "",
+    "ctaText": "wirelesssolution.asia",
+    "durationSeconds": 5
+  },
   "remoteBanner": {
     "enabled": true,
     "displayMode": "both",

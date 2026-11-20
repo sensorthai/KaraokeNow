@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.karaoketv.app.data.local.FavoriteArtistEntity
 import com.karaoketv.app.data.local.FavoriteSongEntity
 import com.karaoketv.app.data.local.FavoritesBackupManager
+import com.karaoketv.app.ads.AdConfigRepository
 import com.karaoketv.app.data.local.KaraokeDatabase
 import com.karaoketv.app.data.local.QueueItemEntity
 import com.karaoketv.app.data.local.SearchHistoryEntity
@@ -289,14 +290,24 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private val _pendingNextSongAd = MutableStateFlow<QueueItemEntity?>(null)
+    val pendingNextSongAd: StateFlow<QueueItemEntity?> = _pendingNextSongAd.asStateFlow()
+
     fun onSongEnded() {
         viewModelScope.launch {
             val next = dao.advanceToNextSong()
             if (next == null) {
+                _pendingNextSongAd.value = null
                 _isPlayerFullscreen.value = false
                 _statusBanner.value = "เล่นครบทุกเพลงในคิวแล้ว"
+            } else if (AdConfigRepository.currentConfig.betweenSongs.enabled) {
+                _pendingNextSongAd.value = next
             }
         }
+    }
+
+    fun dismissBetweenSongsAd() {
+        _pendingNextSongAd.value = null
     }
 
     fun skipToNext() {
