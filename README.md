@@ -89,14 +89,6 @@
 - **🎤 นักร้อง:** มีช่องค้นหา/กรองชื่อนักร้องแบบทันที และตัวกรองเฉพาะ `★ นักร้องโปรด`
 - **❤️ เพลงโปรด:** ดูและจัดการเพลงโปรดทั้งหมด
 
-### 3. ระบบเบื้องหลัง, mDNS, Kiosk Mode และการจัดการโฆษณา
-- **เปิดเครื่องพร้อมใช้งานทันที:** มี `BootReceiver` และ `KaraokeServerService` (Foreground Service) เริ่ม Web Server และ mDNS (`karaokenow.local:8888`) อัตโนมัติทุกครั้งที่เปิด Android TV
-- **Kiosk Mode (กดปุ่ม Home แล้วกลับมาที่แอปทันที):** รองรับการตั้งเป็น Home Launcher (`CATEGORY_HOME`) เมื่อกดปุ่ม **Home** บนรีโมท Android TV สามารถเลือก **Karaoke Now → เสมอ (Always)** เพื่อใช้งานแบบตู้คาราโอเกะเต็มรูปแบบ (หรือตั้งผ่าน ADB: `adb shell cmd package set-home-activity com.karaoketv.app/.MainActivity`)
-- **จัดการโฆษณาผ่านไฟล์ [`ads.json`](ads.json) บน GitHub:** แก้ไขข้อความ รูปภาพ (`imageUrl`) และโหมดแสดงผล (`displayMode`: `"text"` / `"image"` / `"both"`) สำหรับทั้งหน้าเปิดแอป Android TV และแบนเนอร์รีโมทมือถือได้ทันทีโดยไม่ต้องบิลด์ APK ใหม่
-- **เพิ่มเพลงใหม่เข้า SQLite ได้โดยไม่ต้องบิลด์ APK ใหม่:**
-  - วางไฟล์ `/sdcard/Documents/KaraokeNow/custom_songs.json` บนเครื่องทีวี (ระบบนำเข้าอัตโนมัติตอนเปิดแอป)
-  - หรือส่ง JSON Array ผ่าน HTTP API: `POST http://karaokenow.local:8888/api/catalog/import`
-
 ---
 
 ## 📥 วิธีดาวน์โหลด APK จาก GitHub และติดตั้งลง Android TV (ภาษาไทย)
@@ -122,15 +114,6 @@
 4. เปิดแอปจัดการไฟล์บนทีวี (เช่น **File Commander**, **X-plore** หรือ **Files**) แล้วเข้าไปที่ไดรฟ์ USB
 5. กดเลือกไฟล์ `KaraokeNow-v1.01.apk` → กด **ติดตั้ง (Install)** → เปิดแอปใช้งาน
 
-### วิธีที่ 3: ติดตั้งผ่านคอมพิวเตอร์ด้วย ADB (สำหรับผู้พัฒนา)
-1. เปิด **USB Debugging / Network Debugging** ใน Developer Options บน Android TV แล้วดู IP ของทีวี (เช่น `192.168.1.103`)
-2. รันคำสั่งบนคอมพิวเตอร์:
-   ```bash
-   adb connect 192.168.1.103:5555
-   adb -s 192.168.1.103:5555 install -r releases/KaraokeNow-v1.01.apk
-   adb -s 192.168.1.103:5555 shell am start -n com.karaoketv.app/.MainActivity
-   ```
-
 ---
 
 ## 📚 แคตตาล็อกคู่มือเพลง (Songbook PDF สำหรับพิมพ์ — มีสารบัญเลขหน้า)
@@ -154,17 +137,6 @@
 หากค้นหาเพลงที่ต้องการไม่พบ หรืออยากให้ทีมงานเพิ่มเพลง/ศิลปินใหม่เข้าระบบ สามารถแจ้งได้ที่หน้า **GitHub Issues**:
 1. เข้าไปที่ [https://github.com/sensorthai/KaraokeNow/issues](https://github.com/sensorthai/KaraokeNow/issues) แล้วกด **New Issue**
 2. ระบุ **ชื่อศิลปิน**, **ชื่อเพลง** (และลิงก์ YouTube คาราโอเกะถ้ามี) เพื่อให้นำเข้าฐานข้อมูลในรอบอัปเดตถัดไปครับ
-
----
-
-## 🛠️ วิธี Build จากซอร์สโค้ด (สำหรับนักพัฒนา)
-
-```bash
-git clone https://github.com/sensorthai/KaraokeNow.git
-cd KaraokeNow
-./gradlew assembleDebug
-```
-ไฟล์ APK ที่ได้จะอยู่ที่ `app/build/outputs/apk/debug/app-debug.apk`
 
 ---
 
