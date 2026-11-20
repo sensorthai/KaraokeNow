@@ -28,13 +28,12 @@ import kotlinx.coroutines.launch
 
 enum class TvDestination(val label: String) {
     HOME("หน้าแรก"),
+    QUEUE("คิวเพลง"),
     SEARCH("ค้นหา"),
-    CATALOG("รายชื่อเพลง"),
     ARTISTS("นักร้อง"),
     STYLES("สไตล์เพลง"),
     ERAS("ยุคเพลง"),
     FAVORITES("รายการโปรด"),
-    QUEUE("คิวเพลง"),
     QR_REMOTE("สแกน QR")
 }
 

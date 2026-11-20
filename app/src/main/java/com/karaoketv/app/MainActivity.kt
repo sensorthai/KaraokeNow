@@ -285,16 +285,6 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                             onToggleFavorite = { viewModel.toggleFavorite(it) }
                         )
 
-                        TvDestination.CATALOG -> SongCatalogScreen(
-                            songs = catalogSongs,
-                            isSyncing = isSyncingCatalog,
-                            favoriteIds = favoriteIds,
-                            onSyncFromYouTube = { viewModel.syncCatalogFromYouTube() },
-                            onPlayNow = { viewModel.playNow(it) },
-                            onAddToQueue = { viewModel.addToQueue(it) },
-                            onToggleFavorite = { viewModel.toggleFavorite(it) }
-                        )
-
                         TvDestination.ARTISTS -> ArtistsScreen(
                             artists = dynamicArtists,
                             favoriteArtistNames = favoriteArtistNames,
@@ -383,12 +373,11 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
 
 private fun TvDestination.icon(): ImageVector = when (this) {
     TvDestination.HOME -> Icons.Default.Home
+    TvDestination.QUEUE -> Icons.Default.QueueMusic
     TvDestination.SEARCH -> Icons.Default.Search
-    TvDestination.CATALOG -> Icons.Default.LibraryMusic
     TvDestination.ARTISTS -> Icons.Default.Mic
     TvDestination.STYLES -> Icons.Default.Category
     TvDestination.ERAS -> Icons.Default.History
     TvDestination.FAVORITES -> Icons.Default.Favorite
-    TvDestination.QUEUE -> Icons.Default.QueueMusic
     TvDestination.QR_REMOTE -> Icons.Default.QrCode2
 }
