@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.tv.material3.DrawerValue
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Icon
 import androidx.tv.material3.NavigationDrawer
@@ -56,6 +57,7 @@ import androidx.tv.material3.NavigationDrawerItem
 import androidx.tv.material3.NavigationDrawerItemDefaults
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
+import androidx.tv.material3.rememberDrawerState
 import com.karaoketv.app.ads.AdConfigRepository
 import com.karaoketv.app.data.local.QueueStatus
 import com.karaoketv.app.data.model.SearchFilter
@@ -144,35 +146,32 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
             .background(KaraokeColors.Background)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
             NavigationDrawer(
+                drawerState = drawerState,
                 drawerContent = {
+                    val isExpanded = drawerState.currentValue == DrawerValue.Open
                     val drawerScrollState = rememberScrollState()
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
                             .background(Color(0xFFF8FAFC))
                             .verticalScroll(drawerScrollState)
-                            .padding(horizontal = 12.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                            .padding(horizontal = if (isExpanded) 14.dp else 12.dp, vertical = 16.dp),
+                        horizontalAlignment = if (isExpanded) Alignment.Start else Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        Box(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Image(
                                 painter = painterResource(id = R.mipmap.ic_launcher),
                                 contentDescription = "Karaoke Now",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .size(52.dp)
+                                    .size(48.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                            )
-                            Text(
-                                text = "v${BuildConfig.VERSION_NAME}",
-                                color = KaraokeColors.TextSecondary,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold
                             )
                         }
                         Spacer(modifier = Modifier.height(6.dp))
@@ -210,6 +209,15 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                                 )
                             }
                         }
+
+                        Spacer(modifier = Modifier.weight(1f, fill = true))
+                        Text(
+                            text = "v${BuildConfig.VERSION_NAME}",
+                            color = KaraokeColors.TextSecondary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        )
                     }
                 }
             ) {

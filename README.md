@@ -17,6 +17,27 @@
 
 ---
 
+## 🎬 ตัวอย่างการใช้งาน (Demo)
+
+| หน้าจอ Android TV (`Karaoke Now`) | รีโมทมือถือผ่านเว็บ (`karaokenow.local:8888`) |
+| :---: | :---: |
+| ![Android TV Demo](docs/demo-android-tv.gif) | ![Mobile Web Remote Demo](docs/demo-mobile-web.png) |
+
+---
+
+## 📺 สเปคขั้นต่ำและสเปคแนะนำของ Android TV
+
+| รายการ | สเปคขั้นต่ำ (Minimum) | สเปคแนะนำ (Recommended) |
+| :--- | :--- | :--- |
+| **ระบบปฏิบัติการ** | Android 5.0 (API 21) ขึ้นไป | Android TV 7.1.2 / 9+ หรือ Google TV |
+| **หน่วยประมวลผล (CPU)** | Quad-Core ARM Cortex-A53 1.2 GHz | Quad-Core 1.5 GHz+ (รองรับ Hardware Decode H.264 / VP9) |
+| **หน่วยความจำ (RAM)** | 1 GB | 2 GB ขึ้นไป (ค้นหาคลังเพลง 21,995+ เพลงและเล่น 1080p ลื่นไหล) |
+| **พื้นที่เก็บข้อมูล** | ว่างอย่างน้อย 200 MB | ว่าง 500 MB ขึ้นไป (สำหรับ SQLite, แคชปก และไฟล์สำรองโปรด) |
+| **เครือข่าย (Network)** | Wi-Fi 2.4GHz หรือ LAN | Wi-Fi 5GHz หรือ LAN (วงเดียวกับมือถือ, รองรับ mDNS `.local`) |
+| **การควบคุม** | รีโมท TV (D-Pad) | รีโมท TV + มือถือสแกน QR ผ่านเว็บเบราว์เซอร์ |
+
+---
+
 ## ✨ ความสามารถและฟังก์ชันหน้าจอ
 
 ### 1. หน้าจอหลักบน Android TV (9 เมนูหลัก)
