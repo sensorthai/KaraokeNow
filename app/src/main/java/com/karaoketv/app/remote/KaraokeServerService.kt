@@ -16,8 +16,11 @@ import com.karaoketv.app.R
 import com.karaoketv.app.data.local.KaraokeDatabase
 import com.karaoketv.app.data.repository.YouTubeRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class KaraokeServerService : Service() {
 
@@ -38,23 +41,26 @@ class KaraokeServerService : Service() {
             }
         ).also {
             it.start()
-            currentServerUrl = it.getServerUrl()
+            _serverUrlState.value = it.getServerUrl()
         }
 
         mdnsResponder = MdnsResponder(
             context = applicationContext,
             hostLabel = "karaokenow",
-            port = 8888
+            port = 8888,
+            onIpChanged = { newIp ->
+                _serverUrlState.value = "http://$newIp:8888"
+            }
         ).also {
             it.start()
         }
-        Log.i(TAG, "KaraokeServerService started (server=${currentServerUrl}, mDNS=karaokenow.local:8888)")
+        Log.i(TAG, "KaraokeServerService started (server=${_serverUrlState.value}, mDNS=karaokenow.local:8888)")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         localServer?.let {
             it.start()
-            currentServerUrl = it.getServerUrl()
+            _serverUrlState.value = it.getServerUrl()
         }
         mdnsResponder?.start()
         return START_STICKY
@@ -101,9 +107,8 @@ class KaraokeServerService : Service() {
         private const val TAG = "KaraokeServerService"
         private const val NOTIFICATION_ID = 8888
 
-        @Volatile
-        var currentServerUrl: String = "http://127.0.0.1:8888"
-            private set
+        private val _serverUrlState = MutableStateFlow("http://127.0.0.1:8888")
+        val serverUrlState: StateFlow<String> = _serverUrlState.asStateFlow()
 
         private val _playTriggeredFromWeb = MutableSharedFlow<Unit>(extraBufferCapacity = 4)
         val playTriggeredFromWeb: SharedFlow<Unit> = _playTriggeredFromWeb.asSharedFlow()

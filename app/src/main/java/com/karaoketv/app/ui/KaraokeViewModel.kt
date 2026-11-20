@@ -41,8 +41,7 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
     private val dao = KaraokeDatabase.getInstance(application).karaokeDao()
     private val repository = YouTubeRepository(dao)
 
-    val remoteServerUrl: String
-        get() = KaraokeServerService.currentServerUrl
+    val remoteServerUrl: StateFlow<String> = KaraokeServerService.serverUrlState
 
     val mdnsUrl: String = "http://karaokenow.local:8888"
 

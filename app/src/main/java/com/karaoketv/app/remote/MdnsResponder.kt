@@ -29,7 +29,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 class MdnsResponder(
     private val context: Context,
     private val hostLabel: String = "karaokenow",
-    private val port: Int = 8888
+    private val port: Int = 8888,
+    private val onIpChanged: (String) -> Unit = {}
 ) {
     private val tag = "MdnsResponder"
     private val fqdn = "$hostLabel.local"
@@ -116,6 +117,7 @@ class MdnsResponder(
                     }
                     socket = sock
                     lastAnnouncedIp = ipText
+                    onIpChanged(ipText ?: "127.0.0.1")
 
                     // Rapid initial announcements
                     launch {

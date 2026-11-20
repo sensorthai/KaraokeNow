@@ -318,12 +318,15 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                             onOpenPlayer = { viewModel.openPlayerFullscreen() }
                         )
 
-                        TvDestination.QR_REMOTE -> QrRemoteScreen(
-                            serverUrl = viewModel.remoteServerUrl,
-                            mdnsUrl = viewModel.mdnsUrl,
-                            queueCount = activeQueue.size,
-                            totalSongsCount = catalogSongs.size
-                        )
+                        TvDestination.QR_REMOTE -> {
+                            val currentServerUrl by viewModel.remoteServerUrl.collectAsState()
+                            QrRemoteScreen(
+                                serverUrl = currentServerUrl,
+                                mdnsUrl = viewModel.mdnsUrl,
+                                queueCount = activeQueue.size,
+                                totalSongsCount = catalogSongs.size
+                            )
+                        }
                     }
                 }
             }
