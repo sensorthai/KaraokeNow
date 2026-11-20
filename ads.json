@@ -1,0 +1,22 @@
+{
+  "appOpen": {
+    "enabled": true,
+    "displayMode": "both",
+    "badge": "SPONSORED",
+    "title": "Karaoke Now — คาราโอเกะฟรีสำหรับ Android TV",
+    "subtitle": "พัฒนาโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด • สามารถแก้ไขข้อความ รูปภาพ และโหมดแสดงผล (text / image / both) ได้จากไฟล์ ads.json บน GitHub",
+    "imageUrl": "",
+    "ctaText": "wirelesssolution.asia",
+    "durationSeconds": 5
+  },
+  "remoteBanner": {
+    "enabled": true,
+    "displayMode": "both",
+    "badge": "AD",
+    "title": "Karaoke Now — Wireless Solution Asia",
+    "subtitle": "พื้นที่โฆษณาบนรีโมทมือถือ (เลือกโหมด text / image / both ได้จาก ads.json บน GitHub)",
+    "targetUrl": "https://www.wirelesssolution.asia",
+    "ctaText": "เยี่ยมชมเว็บไซต์",
+    "imageUrl": ""
+  }
+}

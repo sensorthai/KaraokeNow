@@ -106,31 +106,37 @@ fun AppOpenAdOverlay(
                 )
             }
 
-            if (ad.imageUrl.isNotBlank()) {
+            val mode = ad.displayMode.lowercase()
+            val showImage = mode != "text" && ad.imageUrl.isNotBlank()
+            val showText = mode != "image" || !showImage
+
+            if (showImage) {
                 AsyncImage(
                     model = ad.imageUrl,
                     contentDescription = ad.title,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
+                        .height(if (mode == "image") 320.dp else 220.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
             }
 
-            Text(
-                text = ad.title,
-                color = KaraokeColors.TextPrimary,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold
-            )
+            if (showText) {
+                Text(
+                    text = ad.title,
+                    color = KaraokeColors.TextPrimary,
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-            Text(
-                text = ad.subtitle,
-                color = KaraokeColors.TextSecondary,
-                fontSize = 15.sp,
-                lineHeight = 22.sp
-            )
+                Text(
+                    text = ad.subtitle,
+                    color = KaraokeColors.TextSecondary,
+                    fontSize = 15.sp,
+                    lineHeight = 22.sp
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 

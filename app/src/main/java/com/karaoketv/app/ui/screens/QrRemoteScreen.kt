@@ -109,6 +109,13 @@ fun QrRemoteScreen(
                 fontSize = 14.sp,
                 lineHeight = 22.sp
             )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = "พัฒนาโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด • https://www.wirelesssolution.asia",
+                color = KaraokeColors.TextSecondary,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

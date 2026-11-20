@@ -61,8 +61,10 @@
 - **🎤 นักร้อง:** มีช่องค้นหา/กรองชื่อนักร้องแบบทันที และตัวกรองเฉพาะ `★ นักร้องโปรด`
 - **❤️ เพลงโปรด:** ดูและจัดการเพลงโปรดทั้งหมด
 
-### 3. ระบบเบื้องหลัง, mDNS และการเพิ่มเพลงโดยไม่ต้องคอมไพล์ใหม่
+### 3. ระบบเบื้องหลัง, mDNS, Kiosk Mode และการจัดการโฆษณา
 - **เปิดเครื่องพร้อมใช้งานทันที:** มี `BootReceiver` และ `KaraokeServerService` (Foreground Service) เริ่ม Web Server และ mDNS (`karaokenow.local:8888`) อัตโนมัติทุกครั้งที่เปิด Android TV
+- **Kiosk Mode (กดปุ่ม Home แล้วกลับมาที่แอปทันที):** รองรับการตั้งเป็น Home Launcher (`CATEGORY_HOME`) เมื่อกดปุ่ม **Home** บนรีโมท Android TV สามารถเลือก **Karaoke Now → เสมอ (Always)** เพื่อใช้งานแบบตู้คาราโอเกะเต็มรูปแบบ (หรือตั้งผ่าน ADB: `adb shell cmd package set-home-activity com.karaoketv.app/.MainActivity`)
+- **จัดการโฆษณาผ่านไฟล์ [`ads.json`](ads.json) บน GitHub:** แก้ไขข้อความ รูปภาพ (`imageUrl`) และโหมดแสดงผล (`displayMode`: `"text"` / `"image"` / `"both"`) สำหรับทั้งหน้าเปิดแอป Android TV และแบนเนอร์รีโมทมือถือได้ทันทีโดยไม่ต้องบิลด์ APK ใหม่
 - **เพิ่มเพลงใหม่เข้า SQLite ได้โดยไม่ต้องบิลด์ APK ใหม่:**
   - วางไฟล์ `/sdcard/Documents/KaraokeNow/custom_songs.json` บนเครื่องทีวี (ระบบนำเข้าอัตโนมัติตอนเปิดแอป)
   - หรือส่ง JSON Array ผ่าน HTTP API: `POST http://karaokenow.local:8888/api/catalog/import`
@@ -111,3 +113,10 @@ cd KaraokeNow
 ./gradlew assembleDebug
 ```
 ไฟล์ APK ที่ได้จะอยู่ที่ `app/build/outputs/apk/debug/app-debug.apk`
+
+---
+
+## 👨‍💻 เครดิตผู้พัฒนา (Developer Credit)
+
+พัฒนาโดย **บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด (Wireless Solution Asia Co., Ltd.)**  
+🌐 เว็บไซต์: [https://www.wirelesssolution.asia](https://www.wirelesssolution.asia)

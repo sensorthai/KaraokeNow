@@ -8,21 +8,23 @@ import java.net.URL
 
 data class AppOpenAdData(
     val enabled: Boolean = true,
+    val displayMode: String = "both", // "text", "image", or "both"
     val badge: String = "SPONSORED",
-    val title: String = "คาราโอเกะ นาว (KaraokeNow) — ฟรีตลอดชีพบน GitHub",
-    val subtitle: String = "พื้นที่โฆษณา / ผู้สนับสนุนเมื่อเปิดแอป • รองรับอัปเดตแคมเปญจาก Remote JSON อัตโนมัติ",
+    val title: String = "Karaoke Now — คาราโอเกะฟรีสำหรับ Android TV",
+    val subtitle: String = "พัฒนาโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด",
     val imageUrl: String = "",
-    val ctaText: String = "สนับสนุนโปรเจกต์บน GitHub",
+    val ctaText: String = "wirelesssolution.asia",
     val durationSeconds: Int = 5
 )
 
 data class RemoteBannerAdData(
     val enabled: Boolean = true,
+    val displayMode: String = "both", // "text", "image", or "both"
     val badge: String = "AD",
-    val title: String = "KaraokeNow Open Source",
-    val subtitle: String = "พื้นที่โฆษณารีโมทมือถือ — ปรับแต่งลิงก์ผู้สนับสนุนหรือแบนเนอร์ได้จาก AdConfig",
-    val targetUrl: String = "https://github.com",
-    val ctaText: String = "ดูเพิ่มเติม",
+    val title: String = "Karaoke Now — Wireless Solution Asia",
+    val subtitle: String = "พัฒนาโดย บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด",
+    val targetUrl: String = "https://www.wirelesssolution.asia",
+    val ctaText: String = "เยี่ยมชมเว็บไซต์",
     val imageUrl: String = ""
 )
 
@@ -32,9 +34,9 @@ data class AdConfig(
 )
 
 object AdConfigRepository {
-    // Optional: Point this to a raw GitHub JSON URL (e.g. https://raw.githubusercontent.com/<user>/<repo>/main/ads.json)
-    // to update TV & mobile remote ads dynamically across all distributed APKs.
-    private const val REMOTE_AD_CONFIG_URL = ""
+    // Editable ad config hosted on GitHub (update ads.json on main to refresh TV & mobile remote ads)
+    private const val REMOTE_AD_CONFIG_URL =
+        "https://raw.githubusercontent.com/sensorthai/KaraokeNow/main/ads.json"
 
     private val gson = Gson()
 

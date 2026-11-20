@@ -392,7 +392,8 @@ private val MOBILE_WEB_APP_HTML = """
 </header>
 <div id="remoteAdBanner" class="ad-banner">
   <span class="ad-badge" id="adBadge">AD</span>
-  <div class="ad-body">
+  <img id="adImage" src="" alt="Sponsor" style="display:none;max-height:64px;max-width:160px;border-radius:10px;object-fit:cover;flex-shrink:0;">
+  <div class="ad-body" id="adTextWrap">
     <div class="ad-title" id="adTitle"></div>
     <div class="ad-sub" id="adSub"></div>
   </div>
@@ -414,6 +415,10 @@ private val MOBILE_WEB_APP_HTML = """
   <button class="secondary" onclick="clearSearch()">✕ ล้าง</button>
 </div>
 <div id="content"></div>
+<footer style="text-align:center;padding:24px 16px 12px;font-size:13px;color:#64748B;line-height:1.6;">
+  พัฒนาโดย <strong style="color:#334155;">บริษัท ไวร์เลส โซลูชั่น เอเชีย จำกัด</strong><br>
+  <a href="https://www.wirelesssolution.asia" target="_blank" rel="noopener" style="color:#D97706;text-decoration:none;font-weight:600;">https://www.wirelesssolution.asia</a>
+</footer>
 <div id="toast" class="toast"></div>
 
 <script>
@@ -725,7 +730,21 @@ async function loadRemoteAd() {
     const res = await fetch('/api/ad-config');
     const ad = await res.json();
     if (!ad || !ad.enabled) return;
+    const mode = (ad.displayMode || 'both').toLowerCase();
+    const hasImg = mode !== 'text' && !!ad.imageUrl;
+    const showText = mode !== 'image' || !hasImg;
     document.getElementById('adBadge').textContent = ad.badge || 'AD';
+    const imgEl = document.getElementById('adImage');
+    if (hasImg) {
+      imgEl.src = ad.imageUrl;
+      imgEl.style.display = 'block';
+      imgEl.style.maxWidth = mode === 'image' ? '100%' : '140px';
+      imgEl.style.flex = mode === 'image' ? '1' : '0 0 auto';
+    } else {
+      imgEl.style.display = 'none';
+    }
+    const textWrap = document.getElementById('adTextWrap');
+    textWrap.style.display = showText ? 'block' : 'none';
     document.getElementById('adTitle').textContent = ad.title || '';
     document.getElementById('adSub').textContent = ad.subtitle || '';
     const cta = document.getElementById('adCta');
