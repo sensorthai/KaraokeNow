@@ -51,7 +51,7 @@
 ## 📥 วิธีดาวน์โหลด APK จาก GitHub และติดตั้งลง Android TV (ภาษาไทย)
 
 ไฟล์ติดตั้งพร้อมใช้งานอยู่ในโฟลเดอร์ [`releases/KaraokeNow-v1.01.apk`](releases/KaraokeNow-v1.01.apk)  
-ลิงก์ดาวน์โหลดตรง: `https://github.com/sensorthai/KaraokNow/raw/main/releases/KaraokeNow-v1.01.apk`
+ลิงก์ดาวน์โหลดตรง: `https://github.com/sensorthai/KaraokeNow/raw/main/releases/KaraokeNow-v1.01.apk`
 
 > **หมายเหตุก่อนติดตั้ง:** บน Android TV ให้เข้าไปที่ **การตั้งค่า (Settings) → ความปลอดภัยและข้อจำกัด (Security & Restrictions) / แอป (Apps)** แล้วอนุญาต **"ติดตั้งแอปที่ไม่รู้จัก (Unknown sources)"** ให้กับแอปที่จะใช้ติดตั้ง
 
@@ -59,7 +59,7 @@
 1. เปิด **Google Play Store** บน Android TV แล้วติดตั้งแอป **Downloader** (โดย AFTVnews)
 2. เปิดแอป **Downloader** แล้วพิมพ์ URL ด้านล่างนี้ลงในช่องกรอกลิงก์ แล้วกด **Go**:
    ```text
-   https://github.com/sensorthai/KaraokNow/raw/main/releases/KaraokeNow-v1.01.apk
+   https://github.com/sensorthai/KaraokeNow/raw/main/releases/KaraokeNow-v1.01.apk
    ```
 3. รอดาวน์โหลดไฟล์ APK จนเสร็จ ระบบจะเด้งหน้าต่างถามติดตั้ง ให้กด **ติดตั้ง (Install)**
 4. เมื่อติดตั้งเสร็จ กด **เปิด (Open)** เพื่อเข้าใช้งาน **Karaoke Now** ได้ทันที
@@ -85,8 +85,8 @@
 ## 🛠️ วิธี Build จากซอร์สโค้ด (สำหรับนักพัฒนา)
 
 ```bash
-git clone https://github.com/sensorthai/KaraokNow.git
-cd KaraokNow
+git clone https://github.com/sensorthai/KaraokeNow.git
+cd KaraokeNow
 ./gradlew assembleDebug
 ```
 ไฟล์ APK ที่ได้จะอยู่ที่ `app/build/outputs/apk/debug/app-debug.apk`
