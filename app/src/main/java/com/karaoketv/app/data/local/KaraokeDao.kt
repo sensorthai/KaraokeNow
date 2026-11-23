@@ -153,6 +153,9 @@ interface KaraokeDao {
     @Query("SELECT videoId, songCode FROM song_cache")
     suspend fun getAllVideoIdCodes(): List<VideoCodeRow>
 
+    @Query("UPDATE song_cache SET songCode = :songCode WHERE videoId = :videoId")
+    suspend fun updateSongCode(videoId: String, songCode: String)
+
     @Query("SELECT DISTINCT thumbnailUrl FROM song_cache WHERE thumbnailUrl != ''")
     suspend fun getAllThumbnailUrls(): List<String>
 

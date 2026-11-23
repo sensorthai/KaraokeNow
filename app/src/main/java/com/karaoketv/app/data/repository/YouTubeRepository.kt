@@ -142,7 +142,7 @@ class YouTubeRepository(
         val prefs = context.getSharedPreferences("karaoke_prefs", Context.MODE_PRIVATE)
         val seedVersion = prefs.getInt("seed_version", 0)
         val existingCount = dao.countCachedSongs()
-        if (existingCount >= 22696 && seedVersion >= 18) return@withContext existingCount
+        if (existingCount >= 22696 && seedVersion >= 19) return@withContext existingCount
 
         runCatching {
             val json = context.assets.open("karaoke_seed.json")
@@ -150,22 +150,46 @@ class YouTubeRepository(
                 .use { it.readText() }
             val listType = object : TypeToken<List<SongItem>>() {}.type
             val songs: List<SongItem> = Gson().fromJson(json, listType)
-            var nextCode = (dao.getMaxSongCodeNumber() ?: 0)
+            var nextCode = maxOf(
+                dao.getMaxSongCodeNumber() ?: 0,
+                songs.maxOfOrNull { it.songCode.toIntOrNull() ?: 0 } ?: 0
+            )
             val existingCodes = dao.getAllVideoIdCodes().associate { it.videoId to it.songCode }
+            val seedVideoIds = HashSet<String>(songs.size)
+            val usedCodes = HashSet<String>(songs.size + existingCodes.size)
+
+            fun allocateUniqueCode(): String {
+                while (true) {
+                    nextCode += 1
+                    val candidate = String.format("%05d", nextCode)
+                    if (usedCodes.add(candidate)) return candidate
+                }
+            }
+
             val entities = songs.map { item ->
-                val existingCode = existingCodes[item.videoId]
-                val code = existingCode?.takeIf { it.isNotBlank() }
-                    ?: item.songCode.takeIf { it.isNotBlank() }
-                    ?: run {
-                        nextCode += 1
-                        String.format("%05d", nextCode)
-                    }
+                seedVideoIds.add(item.videoId)
+                val preferred = item.songCode.takeIf { it.isNotBlank() }
+                    ?: existingCodes[item.videoId]?.takeIf { it.isNotBlank() }
+                val code = if (preferred != null && usedCodes.add(preferred)) {
+                    preferred
+                } else {
+                    allocateUniqueCode()
+                }
                 item.copy(songCode = code).toCacheEntity("SEED:${item.styleTag.lowercase()}")
             }
             entities.chunked(500).forEach { batch ->
                 dao.insertCachedSongs(batch)
             }
-            prefs.edit().putInt("seed_version", 18).apply()
+
+            // Repair any non-seed rows in SQLite that have blank or colliding songCodes
+            for ((vid, oldCode) in existingCodes) {
+                if (vid in seedVideoIds) continue
+                if (oldCode.isBlank() || !usedCodes.add(oldCode)) {
+                    dao.updateSongCode(vid, allocateUniqueCode())
+                }
+            }
+
+            prefs.edit().putInt("seed_version", 19).apply()
             importExternalCustomSongsIfPresent()
             dao.countCachedSongs()
         }.getOrDefault(existingCount)
@@ -175,14 +199,26 @@ class YouTubeRepository(
         if (songs.isEmpty()) return@withContext 0
         var nextCode = dao.getMaxSongCodeNumber() ?: 0
         val existingCodes = dao.getAllVideoIdCodes().associate { it.videoId to it.songCode }
+        val usedCodes = existingCodes.values.filter { it.isNotBlank() }.toMutableSet()
         val entities = songs.map { item ->
-            val existingCode = existingCodes[item.videoId]
-            val code = existingCode?.takeIf { it.isNotBlank() }
-                ?: item.songCode.takeIf { it.isNotBlank() }
-                ?: run {
-                    nextCode += 1
-                    String.format("%05d", nextCode)
+            val existingCode = existingCodes[item.videoId]?.takeIf { it.isNotBlank() }
+            val code = existingCode ?: run {
+                val candidate = item.songCode.takeIf { it.isNotBlank() }
+                if (candidate != null && usedCodes.add(candidate)) {
+                    candidate
+                } else {
+                    var allocated: String
+                    while (true) {
+                        nextCode += 1
+                        val c = String.format("%05d", nextCode)
+                        if (usedCodes.add(c)) {
+                            allocated = c
+                            break
+                        }
+                    }
+                    allocated
                 }
+            }
             val thumb = item.thumbnailUrl.ifBlank { "https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg" }
             item.copy(songCode = code, thumbnailUrl = thumb)
                 .toCacheEntity("IMPORT:${item.styleTag.ifBlank { "สตริง / ป๊อป" }.lowercase()}")
