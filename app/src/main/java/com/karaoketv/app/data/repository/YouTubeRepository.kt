@@ -136,13 +136,13 @@ class YouTubeRepository(
     suspend fun getLocalSongsByEra(eraTag: String): List<SongItem> =
         dao.getSongsByEra(eraTag).map { it.toDomain() }
 
-    suspend fun hasCachedCatalog(): Boolean = dao.countCachedSongs() >= 20831
+    suspend fun hasCachedCatalog(): Boolean = dao.countCachedSongs() >= 22696
 
     suspend fun seedBundledCatalogIfNeeded(context: Context): Int = withContext(Dispatchers.IO) {
         val prefs = context.getSharedPreferences("karaoke_prefs", Context.MODE_PRIVATE)
         val seedVersion = prefs.getInt("seed_version", 0)
         val existingCount = dao.countCachedSongs()
-        if (existingCount >= 20831 && seedVersion >= 17) return@withContext existingCount
+        if (existingCount >= 22696 && seedVersion >= 18) return@withContext existingCount
 
         runCatching {
             val json = context.assets.open("karaoke_seed.json")
@@ -165,7 +165,7 @@ class YouTubeRepository(
             entities.chunked(500).forEach { batch ->
                 dao.insertCachedSongs(batch)
             }
-            prefs.edit().putInt("seed_version", 17).apply()
+            prefs.edit().putInt("seed_version", 18).apply()
             importExternalCustomSongsIfPresent()
             dao.countCachedSongs()
         }.getOrDefault(existingCount)
