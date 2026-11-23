@@ -118,17 +118,17 @@
 
 ## 📚 แคตตาล็อกคู่มือเพลง (Songbook PDF สำหรับพิมพ์ — มีสารบัญเลขหน้า)
 
-- **เล่มรวมทั้งหมด (21,937 เพลง • 2,321 ศิลปิน • 406 หน้า มีสารบัญรายชื่อนักร้องและเลขหน้ากำกับ):**  
+- **เล่มรวมทั้งหมด (21,937 เพลง • 2,321 ศิลปิน • 700 หน้า มีสารบัญรายชื่อนักร้องและเลขหน้ากำกับ):**  
   👉 [`docs/KaraokeNow-Songbook.pdf`](docs/KaraokeNow-Songbook.pdf) (`https://github.com/sensorthai/KaraokeNow/raw/main/docs/KaraokeNow-Songbook.pdf`)
 
 ### แยกตามยุคเพลงทั้ง 5 ยุค (มีสารบัญเลขหน้าทุกเล่ม)
 | ยุคเพลง | จำนวน | ไฟล์ PDF |
 | :--- | :---: | :--- |
-| 1. ยุคบุกเบิก / ลูกกรุง (2489–2509) | 114 ศิลปิน • 1,034 เพลง (19 หน้า) | [`era-1-lukkrung.pdf`](docs/songbooks/era-1-lukkrung.pdf) |
+| 1. ยุคบุกเบิก / ลูกกรุง (2489–2509) | 114 ศิลปิน • 1,034 เพลง (34 หน้า) | [`era-1-lukkrung.pdf`](docs/songbooks/era-1-lukkrung.pdf) |
 | 2. ยุคราชา-ราชินีลูกทุ่ง (2499–2524) | 62 ศิลปิน • 1,319 เพลง (38 หน้า) | [`era-2-lukthung.pdf`](docs/songbooks/era-2-lukthung.pdf) |
-| 3. ยุคสตริงคอมโบ / เพื่อชีวิต (2514–2534) | 349 ศิลปิน • 2,699 เพลง (51 หน้า) | [`era-3-string-combo.pdf`](docs/songbooks/era-3-string-combo.pdf) |
-| 4. ยุคทอง 90s (2534–2544) | 240 ศิลปิน • 2,833 เพลง (50 หน้า) | [`era-4-90s.pdf`](docs/songbooks/era-4-90s.pdf) |
-| 5. ยุค 2000s – ปัจจุบัน (2545–2569) | 1,677 ศิลปิน • 14,052 เพลง (270 หน้า) | [`era-5-2000s-present.pdf`](docs/songbooks/era-5-2000s-present.pdf) |
+| 3. ยุคสตริงคอมโบ / เพื่อชีวิต (2514–2534) | 349 ศิลปิน • 2,699 เพลง (91 หน้า) | [`era-3-string-combo.pdf`](docs/songbooks/era-3-string-combo.pdf) |
+| 4. ยุคทอง 90s (2534–2544) | 240 ศิลปิน • 2,833 เพลง (87 หน้า) | [`era-4-90s.pdf`](docs/songbooks/era-4-90s.pdf) |
+| 5. ยุค 2000s – ปัจจุบัน (2545–2569) | 1,677 ศิลปิน • 14,052 เพลง (460 หน้า) | [`era-5-2000s-present.pdf`](docs/songbooks/era-5-2000s-present.pdf) |
 
 ---
 
