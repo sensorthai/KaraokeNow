@@ -121,6 +121,12 @@
 - **เล่มรวมทั้งหมด (21,937 เพลง • 2,321 ศิลปิน • 700 หน้า มีสารบัญรายชื่อนักร้องและเลขหน้ากำกับ):**  
   👉 [`docs/KaraokeNow-Songbook.pdf`](docs/KaraokeNow-Songbook.pdf) (`https://github.com/sensorthai/KaraokeNow/raw/main/docs/KaraokeNow-Songbook.pdf`)
 
+### แยกตามภาษา (Thai / English Songbook)
+| ประเภท | จำนวน | ไฟล์ PDF |
+| :--- | :---: | :--- |
+| 🇹🇭 เพลงไทยทุกยุค (Thai Songbook) | 2,054 ศิลปิน • 17,385 เพลง (568 หน้า) | [`songbook-thai.pdf`](docs/songbooks/songbook-thai.pdf) |
+| 🌐 เพลงสากล / English Songbook | 452 ศิลปิน • 4,552 เพลง (144 หน้า) | [`songbook-english.pdf`](docs/songbooks/songbook-english.pdf) |
+
 ### แยกตามยุคเพลงทั้ง 5 ยุค (มีสารบัญเลขหน้าทุกเล่ม)
 | ยุคเพลง | จำนวน | ไฟล์ PDF |
 | :--- | :---: | :--- |
