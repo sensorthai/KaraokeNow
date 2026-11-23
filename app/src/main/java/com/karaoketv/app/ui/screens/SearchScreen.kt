@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -66,7 +67,8 @@ fun SearchScreen(
     onSubmitSearch: (String, SearchFilter) -> Unit,
     onPlayNow: (SongItem) -> Unit,
     onAddToQueue: (SongItem) -> Unit,
-    onToggleFavorite: (SongItem) -> Unit = {}
+    onToggleFavorite: (SongItem) -> Unit = {},
+    onSearchFieldFocusChange: (Boolean) -> Unit = {}
 ) {
     var showTvKeyboard by remember { mutableStateOf(false) }
 
@@ -139,7 +141,9 @@ fun SearchScreen(
                     unfocusedContainerColor = KaraokeColors.Surface
                 ),
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .onFocusChanged { onSearchFieldFocusChange(it.isFocused) }
             )
             Button(onClick = { onSubmitSearch(query, selectedFilter) }) {
                 Text(if (isSearching) "กำลังค้นหา..." else "ค้นหา YouTube")

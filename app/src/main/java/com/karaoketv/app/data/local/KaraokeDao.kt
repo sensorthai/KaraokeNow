@@ -147,6 +147,9 @@ interface KaraokeDao {
     @Query("SELECT MAX(CAST(songCode AS INTEGER)) FROM song_cache WHERE songCode != ''")
     suspend fun getMaxSongCodeNumber(): Int?
 
+    @Query("SELECT * FROM song_cache WHERE songCode = :code LIMIT 1")
+    suspend fun getSongByCode(code: String): SongCacheEntity?
+
     @Query("SELECT videoId, songCode FROM song_cache")
     suspend fun getAllVideoIdCodes(): List<VideoCodeRow>
 

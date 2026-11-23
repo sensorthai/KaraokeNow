@@ -1,11 +1,15 @@
 package com.karaoketv.app
 
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,13 +84,56 @@ import com.karaoketv.app.ui.theme.KaraokeTvTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+    private val karaokeViewModel: KaraokeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             KaraokeTvTheme {
-                KaraokeTvApp()
+                KaraokeTvApp(viewModel = karaokeViewModel)
             }
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && !karaokeViewModel.isSearchTextFieldFocused) {
+            val digit = when (event.keyCode) {
+                KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_NUMPAD_0 -> 0
+                KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_NUMPAD_1 -> 1
+                KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_NUMPAD_2 -> 2
+                KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_NUMPAD_3 -> 3
+                KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_NUMPAD_4 -> 4
+                KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_NUMPAD_5 -> 5
+                KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_NUMPAD_6 -> 6
+                KeyEvent.KEYCODE_7, KeyEvent.KEYCODE_NUMPAD_7 -> 7
+                KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_NUMPAD_8 -> 8
+                KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_NUMPAD_9 -> 9
+                else -> null
+            }
+            if (digit != null) {
+                karaokeViewModel.onRemoteDigitPressed(digit)
+                return true
+            }
+            if (karaokeViewModel.remoteCodeInput.value.isNotEmpty()) {
+                when (event.keyCode) {
+                    KeyEvent.KEYCODE_DPAD_CENTER,
+                    KeyEvent.KEYCODE_ENTER,
+                    KeyEvent.KEYCODE_NUMPAD_ENTER -> {
+                        karaokeViewModel.onRemoteCodeConfirm()
+                        return true
+                    }
+                    KeyEvent.KEYCODE_DEL -> {
+                        karaokeViewModel.onRemoteCodeBackspace()
+                        return true
+                    }
+                    KeyEvent.KEYCODE_BACK -> {
+                        karaokeViewModel.clearRemoteCodeInput()
+                        return true
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 }
 
@@ -121,6 +168,9 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
     val statusBanner by viewModel.statusBanner.collectAsState()
     val isPlayerFullscreen by viewModel.isPlayerFullscreen.collectAsState()
     val pendingNextSongAd by viewModel.pendingNextSongAd.collectAsState()
+    val remoteCodeInput by viewModel.remoteCodeInput.collectAsState()
+    val remoteCodeMatchedSong by viewModel.remoteCodeMatchedSong.collectAsState()
+    val remoteCodeFeedback by viewModel.remoteCodeFeedback.collectAsState()
 
     val waitingCount = activeQueue.count { it.status == QueueStatus.WAITING }
 
@@ -131,31 +181,30 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
         }
     }
 
-    if (isPlayerFullscreen && currentPlaying != null) {
-        BackHandler {
-            viewModel.dismissBetweenSongsAd()
-            viewModel.closePlayerFullscreen()
-        }
-        val betweenSong = pendingNextSongAd
-        if (betweenSong != null && adConfig.betweenSongs.enabled) {
-            BetweenSongsAdOverlay(
-                nextSong = betweenSong,
-                ad = adConfig.betweenSongs,
-                onFinish = { viewModel.dismissBetweenSongsAd() }
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isPlayerFullscreen && currentPlaying != null) {
+            BackHandler {
+                viewModel.dismissBetweenSongsAd()
+                viewModel.closePlayerFullscreen()
+            }
+            val betweenSong = pendingNextSongAd
+            if (betweenSong != null && adConfig.betweenSongs.enabled) {
+                BetweenSongsAdOverlay(
+                    nextSong = betweenSong,
+                    ad = adConfig.betweenSongs,
+                    onFinish = { viewModel.dismissBetweenSongsAd() }
+                )
+            } else {
+                PlayerScreen(
+                    currentSong = currentPlaying!!,
+                    waitingCount = waitingCount,
+                    onSongEnded = { viewModel.onSongEnded() },
+                    onSkipNext = { viewModel.skipToNext() },
+                    onBackToMenu = { viewModel.closePlayerFullscreen() }
+                )
+            }
         } else {
-            PlayerScreen(
-                currentSong = currentPlaying!!,
-                waitingCount = waitingCount,
-                onSongEnded = { viewModel.onSongEnded() },
-                onSkipNext = { viewModel.skipToNext() },
-                onBackToMenu = { viewModel.closePlayerFullscreen() }
-            )
-        }
-        return
-    }
-
-    Surface(
+            Surface(
         modifier = Modifier
             .fillMaxSize()
             .background(KaraokeColors.Background)
@@ -282,7 +331,8 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                             onSubmitSearch = { q, f -> viewModel.performSearch(q, f) },
                             onPlayNow = { viewModel.playNow(it) },
                             onAddToQueue = { viewModel.addToQueue(it) },
-                            onToggleFavorite = { viewModel.toggleFavorite(it) }
+                            onToggleFavorite = { viewModel.toggleFavorite(it) },
+                            onSearchFieldFocusChange = { viewModel.isSearchTextFieldFocused = it }
                         )
 
                         TvDestination.ARTISTS -> ArtistsScreen(
@@ -366,6 +416,62 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                     ad = adConfig.appOpen,
                     onDismiss = { showAppOpenAd = false }
                 )
+            }
+        }
+    }
+    }
+
+        // Remote Number Song Code OSD Overlay (works on both menus & fullscreen player)
+        if (remoteCodeInput.isNotEmpty() || remoteCodeFeedback != null) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(24.dp)
+                    .width(340.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xEB0F172A))
+                    .border(BorderStroke(1.5.dp, KaraokeColors.Primary), RoundedCornerShape(16.dp))
+                    .padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(
+                    text = "กดเลขรหัสเพลงจากรีโมท",
+                    color = KaraokeColors.Primary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if (remoteCodeInput.isNotEmpty()) {
+                    val paddedDisplay = remoteCodeInput.padEnd(5, '_')
+                        .toCharArray()
+                        .joinToString(" ")
+                    Text(
+                        text = "# $paddedDisplay",
+                        color = Color.White,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    remoteCodeMatchedSong?.let { matched ->
+                        Text(
+                            text = "${matched.title} — ${matched.artistName}",
+                            color = Color(0xFFE2E8F0),
+                            fontSize = 14.sp,
+                            maxLines = 1
+                        )
+                    }
+                    Text(
+                        text = "กดครบ 5 หลักเพื่อเข้าคิวอัตโนมัติ หรือกด OK",
+                        color = Color(0xFF94A3B8),
+                        fontSize = 11.sp
+                    )
+                }
+                remoteCodeFeedback?.let { feedback ->
+                    Text(
+                        text = feedback,
+                        color = if (feedback.startsWith("✓")) Color(0xFF4ADE80) else Color(0xFFF87171),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

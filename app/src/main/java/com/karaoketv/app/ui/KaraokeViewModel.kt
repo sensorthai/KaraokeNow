@@ -10,6 +10,7 @@ import com.karaoketv.app.ads.AdConfigRepository
 import com.karaoketv.app.data.local.KaraokeDatabase
 import com.karaoketv.app.data.local.QueueItemEntity
 import com.karaoketv.app.data.local.SearchHistoryEntity
+import com.karaoketv.app.data.local.SongCacheEntity
 import com.karaoketv.app.data.local.ThumbnailCacheManager
 import com.karaoketv.app.data.model.ArtistProfile
 import com.karaoketv.app.data.model.ChannelProfile
@@ -18,6 +19,8 @@ import com.karaoketv.app.data.model.SearchFilter
 import com.karaoketv.app.data.model.SongItem
 import com.karaoketv.app.data.repository.YouTubeRepository
 import com.karaoketv.app.remote.KaraokeServerService
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -323,6 +326,115 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
 
     private val _pendingNextSongAd = MutableStateFlow<QueueItemEntity?>(null)
     val pendingNextSongAd: StateFlow<QueueItemEntity?> = _pendingNextSongAd.asStateFlow()
+
+    // --- Remote Number Song Code Entry ---
+    @Volatile
+    var isSearchTextFieldFocused: Boolean = false
+
+    private val _remoteCodeInput = MutableStateFlow("")
+    val remoteCodeInput: StateFlow<String> = _remoteCodeInput.asStateFlow()
+
+    private val _remoteCodeMatchedSong = MutableStateFlow<SongItem?>(null)
+    val remoteCodeMatchedSong: StateFlow<SongItem?> = _remoteCodeMatchedSong.asStateFlow()
+
+    private val _remoteCodeFeedback = MutableStateFlow<String?>(null)
+    val remoteCodeFeedback: StateFlow<String?> = _remoteCodeFeedback.asStateFlow()
+
+    private var remoteCodeTimerJob: Job? = null
+
+    fun onRemoteDigitPressed(digit: Int) {
+        remoteCodeTimerJob?.cancel()
+        _remoteCodeFeedback.value = null
+        val current = _remoteCodeInput.value
+        val next = if (current.length >= 5) digit.toString() else current + digit.toString()
+        _remoteCodeInput.value = next
+
+        if (next.length == 5) {
+            viewModelScope.launch {
+                enqueueBySongCode(next)
+            }
+        } else {
+            val padded = next.padStart(5, '0')
+            viewModelScope.launch {
+                _remoteCodeMatchedSong.value = dao.getSongByCode(padded)?.toSongItem()
+            }
+            scheduleRemoteCodeClear(4_500L)
+        }
+    }
+
+    fun onRemoteCodeBackspace() {
+        remoteCodeTimerJob?.cancel()
+        val current = _remoteCodeInput.value
+        if (current.isEmpty()) {
+            clearRemoteCodeInput()
+            return
+        }
+        val next = current.dropLast(1)
+        _remoteCodeInput.value = next
+        _remoteCodeFeedback.value = null
+        if (next.isEmpty()) {
+            _remoteCodeMatchedSong.value = null
+        } else {
+            val padded = next.padStart(5, '0')
+            viewModelScope.launch {
+                _remoteCodeMatchedSong.value = dao.getSongByCode(padded)?.toSongItem()
+            }
+            scheduleRemoteCodeClear(4_500L)
+        }
+    }
+
+    fun onRemoteCodeConfirm() {
+        val current = _remoteCodeInput.value
+        if (current.isEmpty()) return
+        remoteCodeTimerJob?.cancel()
+        val padded = current.padStart(5, '0')
+        viewModelScope.launch {
+            enqueueBySongCode(padded)
+        }
+    }
+
+    fun clearRemoteCodeInput() {
+        remoteCodeTimerJob?.cancel()
+        _remoteCodeInput.value = ""
+        _remoteCodeMatchedSong.value = null
+        _remoteCodeFeedback.value = null
+    }
+
+    private suspend fun enqueueBySongCode(code: String) {
+        val entity = dao.getSongByCode(code)
+        if (entity != null) {
+            val song = entity.toSongItem()
+            _remoteCodeMatchedSong.value = song
+            addToQueue(song)
+            _remoteCodeFeedback.value = "✓ เพิ่มเข้าคิวแล้ว: #$code ${song.title}"
+        } else {
+            _remoteCodeMatchedSong.value = null
+            _remoteCodeFeedback.value = "✗ ไม่พบเพลงรหัส #$code"
+        }
+        _remoteCodeInput.value = ""
+        scheduleRemoteCodeClear(2_400L)
+    }
+
+    private fun scheduleRemoteCodeClear(delayMs: Long) {
+        remoteCodeTimerJob?.cancel()
+        remoteCodeTimerJob = viewModelScope.launch {
+            delay(delayMs)
+            _remoteCodeInput.value = ""
+            _remoteCodeMatchedSong.value = null
+            _remoteCodeFeedback.value = null
+        }
+    }
+
+    private fun SongCacheEntity.toSongItem() = SongItem(
+        videoId = videoId,
+        title = title,
+        artistName = artistName,
+        styleTag = styleTag,
+        thumbnailUrl = thumbnailUrl,
+        channelTitle = channelTitle,
+        songCode = songCode,
+        eraTag = eraTag
+    )
 
     fun onSongEnded() {
         viewModelScope.launch {
