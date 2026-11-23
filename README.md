@@ -118,23 +118,23 @@
 
 ## 📚 แคตตาล็อกคู่มือเพลง (Songbook PDF สำหรับพิมพ์ — มีสารบัญเลขหน้า)
 
-- **เล่มรวมทั้งหมด (21,937 เพลง • 2,321 ศิลปิน • 700 หน้า มีสารบัญรายชื่อนักร้องและเลขหน้ากำกับ):**  
+- **เล่มรวมทั้งหมด (22,696 เพลง • 2,808 ศิลปิน • 748 หน้า มีสารบัญรายชื่อนักร้องและเลขหน้ากำกับ):**  
   👉 [`docs/KaraokeNow-Songbook.pdf`](docs/KaraokeNow-Songbook.pdf) (`https://github.com/sensorthai/KaraokeNow/raw/main/docs/KaraokeNow-Songbook.pdf`)
 
 ### แยกตามภาษา (Thai / English Songbook)
 | ประเภท | จำนวน | ไฟล์ PDF |
 | :--- | :---: | :--- |
 | 🇹🇭 เพลงไทยทุกยุค (Thai Songbook) | 2,054 ศิลปิน • 17,385 เพลง (568 หน้า) | [`songbook-thai.pdf`](docs/songbooks/songbook-thai.pdf) |
-| 🌐 เพลงสากล / English Songbook | 452 ศิลปิน • 4,552 เพลง (144 หน้า) | [`songbook-english.pdf`](docs/songbooks/songbook-english.pdf) |
+| 🌐 เพลงสากล / English Songbook | 946 ศิลปิน • 5,311 เพลง (195 หน้า) | [`songbook-english.pdf`](docs/songbooks/songbook-english.pdf) |
 
 ### แยกตามยุคเพลงทั้ง 5 ยุค (มีสารบัญเลขหน้าทุกเล่ม)
 | ยุคเพลง | จำนวน | ไฟล์ PDF |
 | :--- | :---: | :--- |
-| 1. ยุคบุกเบิก / ลูกกรุง (2489–2509) | 114 ศิลปิน • 1,034 เพลง (34 หน้า) | [`era-1-lukkrung.pdf`](docs/songbooks/era-1-lukkrung.pdf) |
+| 1. ยุคบุกเบิก / ลูกกรุง (2489–2509) | 224 ศิลปิน • 1,199 เพลง (45 หน้า) | [`era-1-lukkrung.pdf`](docs/songbooks/era-1-lukkrung.pdf) |
 | 2. ยุคราชา-ราชินีลูกทุ่ง (2499–2524) | 62 ศิลปิน • 1,319 เพลง (38 หน้า) | [`era-2-lukthung.pdf`](docs/songbooks/era-2-lukthung.pdf) |
-| 3. ยุคสตริงคอมโบ / เพื่อชีวิต (2514–2534) | 349 ศิลปิน • 2,699 เพลง (91 หน้า) | [`era-3-string-combo.pdf`](docs/songbooks/era-3-string-combo.pdf) |
-| 4. ยุคทอง 90s (2534–2544) | 240 ศิลปิน • 2,833 เพลง (87 หน้า) | [`era-4-90s.pdf`](docs/songbooks/era-4-90s.pdf) |
-| 5. ยุค 2000s – ปัจจุบัน (2545–2569) | 1,677 ศิลปิน • 14,052 เพลง (460 หน้า) | [`era-5-2000s-present.pdf`](docs/songbooks/era-5-2000s-present.pdf) |
+| 3. ยุคสตริงคอมโบ / เพื่อชีวิต (2514–2534) | 574 ศิลปิน • 3,022 เพลง (113 หน้า) | [`era-3-string-combo.pdf`](docs/songbooks/era-3-string-combo.pdf) |
+| 4. ยุคทอง 90s (2534–2544) | 352 ศิลปิน • 2,974 เพลง (98 หน้า) | [`era-4-90s.pdf`](docs/songbooks/era-4-90s.pdf) |
+| 5. ยุค 2000s – ปัจจุบัน (2545–2569) | 1,763 ศิลปิน • 14,182 เพลง (469 หน้า) | [`era-5-2000s-present.pdf`](docs/songbooks/era-5-2000s-present.pdf) |
 
 ---
 
