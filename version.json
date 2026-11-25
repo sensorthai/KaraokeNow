@@ -4,7 +4,7 @@
   "minAndroidSdk": 21,
   "forceUpdate": false,
   "apkUrl": "https://github.com/sensorthai/KaraokeNow/raw/main/releases/KaraokeNow-v1.02.apk",
-  "sha256": "652e5eb883dbb4e5e3fdaf3c168e1ec483d74bd022ad4557a2df4a624da80f49",
+  "sha256": "19a1aa32debe43ed0fe0fbee73df230e3587e73eb90fcf58901b7d1cbcce1985",
   "changelog": [
     "รองรับระบบ OTA Update อัตโนมัติพร้อมตรวจสอบ SHA-256",
     "รองรับกดเลขรหัสเพลงจากรีโมทโดยตรง",
