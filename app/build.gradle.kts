@@ -12,8 +12,8 @@ android {
         applicationId = "com.karaoketv.app"
         minSdk = 21
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.01"
+        versionCode = 3
+        versionName = "1.02"
 
         // Set your YouTube Data API v3 key in local.properties as YOUTUBE_API_KEY=...
         val youtubeApiKey = project.findProperty("YOUTUBE_API_KEY")?.toString() ?: ""
