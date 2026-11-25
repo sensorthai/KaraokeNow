@@ -18,6 +18,9 @@ import com.karaoketv.app.data.model.MusicStyle
 import com.karaoketv.app.data.model.SearchFilter
 import com.karaoketv.app.data.model.SongItem
 import com.karaoketv.app.data.repository.YouTubeRepository
+import com.karaoketv.app.ota.OtaManifest
+import com.karaoketv.app.ota.OtaState
+import com.karaoketv.app.ota.OtaUpdateManager
 import com.karaoketv.app.remote.KaraokeServerService
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -82,6 +85,8 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
     private val _isSyncingCatalog = MutableStateFlow(false)
     val isSyncingCatalog: StateFlow<Boolean> = _isSyncingCatalog.asStateFlow()
 
+    val otaState: StateFlow<OtaState> = OtaUpdateManager.state
+
     init {
         ThumbnailCacheManager.init(application)
         KaraokeServerService.start(application)
@@ -107,7 +112,24 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
             launch {
                 ThumbnailCacheManager.preloadAll(getApplication(), dao.getAllThumbnailUrls())
             }
+            launch {
+                OtaUpdateManager.checkForUpdate()
+            }
         }
+    }
+
+    fun startOtaDownload(manifest: OtaManifest) {
+        viewModelScope.launch {
+            OtaUpdateManager.downloadAndVerify(getApplication(), manifest)
+        }
+    }
+
+    fun installOtaApk(apkFile: java.io.File) {
+        OtaUpdateManager.installApk(getApplication(), apkFile)
+    }
+
+    fun dismissOtaDialog() {
+        OtaUpdateManager.dismiss()
     }
 
     override fun onCleared() {

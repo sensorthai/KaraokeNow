@@ -1,0 +1,13 @@
+{
+  "versionCode": 2,
+  "versionName": "1.01",
+  "minAndroidSdk": 21,
+  "forceUpdate": false,
+  "apkUrl": "https://github.com/sensorthai/KaraokeNow/raw/main/releases/KaraokeNow-v1.01.apk",
+  "sha256": "68a6d86655fd2525a64c16954ac298a6bb2885fbf246817edc06ce6480beca16",
+  "changelog": [
+    "รองรับระบบ OTA Update อัตโนมัติพร้อมตรวจสอบ SHA-256",
+    "รองรับกดเลขรหัสเพลงจากรีโมทโดยตรง",
+    "โหลดรูปภาพเพลงลง Local Disk ล่วงหน้า และจัดอันดับเพลงฮิตหน้าแรก"
+  ]
+}

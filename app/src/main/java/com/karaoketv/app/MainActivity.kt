@@ -65,6 +65,7 @@ import androidx.tv.material3.rememberDrawerState
 import com.karaoketv.app.ads.AdConfigRepository
 import com.karaoketv.app.data.local.QueueStatus
 import com.karaoketv.app.data.model.SearchFilter
+import com.karaoketv.app.ota.OtaState
 import com.karaoketv.app.ui.KaraokeViewModel
 import com.karaoketv.app.ui.TvDestination
 import com.karaoketv.app.ui.components.AppOpenAdOverlay
@@ -171,6 +172,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
     val remoteCodeInput by viewModel.remoteCodeInput.collectAsState()
     val remoteCodeMatchedSong by viewModel.remoteCodeMatchedSong.collectAsState()
     val remoteCodeFeedback by viewModel.remoteCodeFeedback.collectAsState()
+    val otaState by viewModel.otaState.collectAsState()
 
     val waitingCount = activeQueue.count { it.status == QueueStatus.WAITING }
 
@@ -421,6 +423,106 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                     ad = adConfig.appOpen,
                     onDismiss = { showAppOpenAd = false }
                 )
+            }
+
+            if (!showAppOpenAd && otaState !is OtaState.Idle && otaState !is OtaState.Checking) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xB3000000)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .width(480.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(Color(0xFF0F172A))
+                            .border(BorderStroke(1.5.dp, KaraokeColors.Primary), RoundedCornerShape(18.dp))
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        when (val s = otaState) {
+                            is OtaState.UpdateAvailable -> {
+                                Text(
+                                    text = "พบอัปเดตใหม่ Karaoke Now v${s.manifest.versionName}",
+                                    color = KaraokeColors.Primary,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                s.manifest.changelog.forEach { item ->
+                                    Text(
+                                        text = "• $item",
+                                        color = Color(0xFFE2E8F0),
+                                        fontSize = 14.sp
+                                    )
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    androidx.tv.material3.Button(onClick = { viewModel.startOtaDownload(s.manifest) }) {
+                                        Text("ดาวน์โหลดและอัปเดต")
+                                    }
+                                    if (!s.manifest.forceUpdate) {
+                                        androidx.tv.material3.OutlinedButton(onClick = { viewModel.dismissOtaDialog() }) {
+                                            Text("ไว้ทีหลัง")
+                                        }
+                                    }
+                                }
+                            }
+                            is OtaState.Downloading -> {
+                                Text(
+                                    text = "กำลังดาวน์โหลดอัปเดต v${s.manifest.versionName}... ${s.progressPercent}%",
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "ระบบจะตรวจสอบความถูกต้องด้วย SHA-256 อัตโนมัติหลังโหลดเสร็จ",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 13.sp
+                                )
+                            }
+                            is OtaState.ReadyToInstall -> {
+                                Text(
+                                    text = "ตรวจสอบไฟล์สำเร็จ (SHA-256 ผ่าน)",
+                                    color = Color(0xFF4ADE80),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "พร้อมติดตั้ง Karaoke Now v${s.manifest.versionName}",
+                                    color = Color(0xFFE2E8F0),
+                                    fontSize = 14.sp
+                                )
+                                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    androidx.tv.material3.Button(onClick = { viewModel.installOtaApk(s.apkFile) }) {
+                                        Text("ติดตั้งทันที")
+                                    }
+                                    if (!s.manifest.forceUpdate) {
+                                        androidx.tv.material3.OutlinedButton(onClick = { viewModel.dismissOtaDialog() }) {
+                                            Text("ไว้ทีหลัง")
+                                        }
+                                    }
+                                }
+                            }
+                            is OtaState.Error -> {
+                                Text(
+                                    text = "อัปเดตไม่สำเร็จ",
+                                    color = Color(0xFFF87171),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = s.message,
+                                    color = Color(0xFFE2E8F0),
+                                    fontSize = 14.sp
+                                )
+                                androidx.tv.material3.Button(onClick = { viewModel.dismissOtaDialog() }) {
+                                    Text("ปิด")
+                                }
+                            }
+                            else -> {}
+                        }
+                    }
+                }
             }
         }
     }
