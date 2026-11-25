@@ -45,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -426,6 +428,16 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
             }
 
             if (!showAppOpenAd && otaState !is OtaState.Idle && otaState !is OtaState.Checking) {
+                val otaPrimaryFocus = remember { FocusRequester() }
+                LaunchedEffect(otaState) {
+                    if (otaState is OtaState.UpdateAvailable ||
+                        otaState is OtaState.ReadyToInstall ||
+                        otaState is OtaState.Error
+                    ) {
+                        delay(150)
+                        runCatching { otaPrimaryFocus.requestFocus() }
+                    }
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -457,12 +469,15 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                                     )
                                 }
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    androidx.tv.material3.Button(onClick = { viewModel.startOtaDownload(s.manifest) }) {
+                                    androidx.tv.material3.Button(
+                                        onClick = { viewModel.startOtaDownload(s.manifest) },
+                                        modifier = Modifier.focusRequester(otaPrimaryFocus)
+                                    ) {
                                         Text("ดาวน์โหลดและอัปเดต")
                                     }
                                     if (!s.manifest.forceUpdate) {
                                         androidx.tv.material3.OutlinedButton(onClick = { viewModel.dismissOtaDialog() }) {
-                                            Text("ไว้ทีหลัง")
+                                            Text("ไว้ทีหลัง", color = Color.White)
                                         }
                                     }
                                 }
@@ -493,12 +508,15 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                                     fontSize = 14.sp
                                 )
                                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    androidx.tv.material3.Button(onClick = { viewModel.installOtaApk(s.apkFile) }) {
+                                    androidx.tv.material3.Button(
+                                        onClick = { viewModel.installOtaApk(s.apkFile) },
+                                        modifier = Modifier.focusRequester(otaPrimaryFocus)
+                                    ) {
                                         Text("ติดตั้งทันที")
                                     }
                                     if (!s.manifest.forceUpdate) {
                                         androidx.tv.material3.OutlinedButton(onClick = { viewModel.dismissOtaDialog() }) {
-                                            Text("ไว้ทีหลัง")
+                                            Text("ไว้ทีหลัง", color = Color.White)
                                         }
                                     }
                                 }
@@ -515,7 +533,10 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                                     color = Color(0xFFE2E8F0),
                                     fontSize = 14.sp
                                 )
-                                androidx.tv.material3.Button(onClick = { viewModel.dismissOtaDialog() }) {
+                                androidx.tv.material3.Button(
+                                    onClick = { viewModel.dismissOtaDialog() },
+                                    modifier = Modifier.focusRequester(otaPrimaryFocus)
+                                ) {
                                     Text("ปิด")
                                 }
                             }
