@@ -250,7 +250,8 @@ class LocalKaraokeServer(
                                 position = 0
                             )
                             val current = dao.observeCurrentPlaying().first()
-                            if (path == "/api/queue/play" || current == null) {
+                            val queueEnabled = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+                            if (!queueEnabled || path == "/api/queue/play" || current == null) {
                                 dao.playImmediately(entity)
                                 onPlayTriggeredFromWeb()
                             } else {
@@ -407,7 +408,7 @@ private val MOBILE_WEB_APP_HTML = """
 <div class="tabs">
   <button class="tab active" id="tab-search" onclick="switchTab('search', this)">🔍 ค้นหาเพลง</button>
   <button class="tab" id="tab-code" onclick="switchTab('code', this)">🔢 กดรหัสเพลง</button>
-  <button class="tab" id="tab-queue" onclick="switchTab('queue', this)">📋 คิวเพลง (<span id="qCount">0</span>)</button>
+  ${if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) """<button class="tab" id="tab-queue" onclick="switchTab('queue', this)">📋 คิวเพลง (<span id="qCount">0</span>)</button>""" else ""}
   <button class="tab" id="tab-eras" onclick="switchTab('eras', this)">🕰️ ยุคเพลง</button>
   <button class="tab" id="tab-artists" onclick="switchTab('artists', this)">🎤 นักร้อง</button>
   <button class="tab" id="tab-styles" onclick="switchTab('styles', this)">🎼 สไตล์เพลง</button>
@@ -426,6 +427,7 @@ private val MOBILE_WEB_APP_HTML = """
 <div id="toast" class="toast"></div>
 
 <script>
+const QUEUE_ENABLED = ${android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O};
 let currentTab = 'search';
 let favIds = new Set();
 let favArtists = new Set();
@@ -504,7 +506,7 @@ async function searchByCode() {
         </div>
       </div>
       <div class="actions">
-        <button class="primary" onclick="queueAction('/api/queue/add', '${'$'}{s.videoId}', 'เพิ่มเข้าคิวแล้ว')">+ เพิ่มคิว</button>
+        ${'$'}{QUEUE_ENABLED ? `<button class="primary" onclick="queueAction('/api/queue/add', '${'$'}{s.videoId}', 'เพิ่มเข้าคิวแล้ว')">+ เพิ่มคิว</button>` : ''}
         <button class="play" onclick="queueAction('/api/queue/play', '${'$'}{s.videoId}', 'กำลังเปิดเล่นบนทีวี')">▶ ร้องเลย</button>
         <button class="fav ${'$'}{isFav ? 'on' : ''}" onclick="toggleFav('${'$'}{s.videoId}', this)">${'$'}{isFav ? '♥ โปรด' : '♡ โปรด'}</button>
       </div>
@@ -542,7 +544,7 @@ function renderSongs(songs, bannerLabel = '') {
         </div>
       </div>
       <div class="actions">
-        <button class="primary" onclick="queueAction('/api/queue/add', '${'$'}{s.videoId}', 'เพิ่มเข้าคิวแล้ว')">+ เพิ่มคิว</button>
+        ${'$'}{QUEUE_ENABLED ? `<button class="primary" onclick="queueAction('/api/queue/add', '${'$'}{s.videoId}', 'เพิ่มเข้าคิวแล้ว')">+ เพิ่มคิว</button>` : ''}
         <button class="play" onclick="queueAction('/api/queue/play', '${'$'}{s.videoId}', 'กำลังเปิดเล่นบนทีวี')">▶ ร้องเลย</button>
         <button class="fav ${'$'}{isFav ? 'on' : ''}" onclick="toggleFav('${'$'}{s.videoId}', this)">${'$'}{isFav ? '♥ โปรด' : '♡ โปรด'}</button>
       </div>
@@ -668,7 +670,7 @@ async function loadQueue() {
   const items = await res.json();
   document.getElementById('qCount').textContent = items.length;
   const playing = items.find(i => i.status === 'PLAYING');
-  document.getElementById('nowPlaying').textContent = playing ? '▶ กำลังเล่น: ' + playing.title : 'พร้อมรับคิวเพลง';
+  document.getElementById('nowPlaying').textContent = playing ? '▶ กำลังเล่น: ' + playing.title : (QUEUE_ENABLED ? 'พร้อมรับคิวเพลง' : 'พร้อมเล่นเพลง');
   if (currentTab !== 'queue') return;
   const controls = `<div style="padding:12px;display:flex;gap:8px;">
     <button class="play" style="flex:1" onclick="postSimple('/api/queue/next','ข้ามไปเพลงถัดไป')">⏭ เพลงถัดไป</button>
@@ -726,7 +728,7 @@ async function refreshBadges() {
     document.getElementById('catalogStats').textContent = 'คลังเพลงในระบบ: ' + stats.totalSongs.toLocaleString() + ' เพลง • v' + (stats.version || '${BuildConfig.VERSION_NAME}');
   }
   const playing = items.find(i => i.status === 'PLAYING');
-  document.getElementById('nowPlaying').textContent = playing ? '▶ กำลังเล่น: ' + playing.title : 'พร้อมรับคิวเพลง';
+  document.getElementById('nowPlaying').textContent = playing ? '▶ กำลังเล่น: ' + playing.title : (QUEUE_ENABLED ? 'พร้อมรับคิวเพลง' : 'พร้อมเล่นเพลง');
 }
 function esc(s) { return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 async function loadRemoteAd() {

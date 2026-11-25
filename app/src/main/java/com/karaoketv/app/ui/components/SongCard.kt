@@ -45,6 +45,7 @@ fun SongCard(
     onAddToQueue: (SongItem) -> Unit,
     isFavorite: Boolean = false,
     onToggleFavorite: ((SongItem) -> Unit)? = null,
+    showQueueButton: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -141,17 +142,26 @@ fun SongCard(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Button(
-                onClick = { onAddToQueue(song) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "+ คิว", fontSize = 12.sp)
-            }
-            OutlinedButton(
-                onClick = { onPlayNow(song) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "ร้องเลย", fontSize = 12.sp)
+            if (showQueueButton) {
+                Button(
+                    onClick = { onAddToQueue(song) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "+ คิว", fontSize = 12.sp)
+                }
+                OutlinedButton(
+                    onClick = { onPlayNow(song) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "ร้องเลย", fontSize = 12.sp)
+                }
+            } else {
+                Button(
+                    onClick = { onPlayNow(song) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "▶ ร้องเลย", fontSize = 12.sp)
+                }
             }
             if (onToggleFavorite != null) {
                 OutlinedButton(

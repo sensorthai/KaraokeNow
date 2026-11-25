@@ -68,6 +68,7 @@ fun SearchScreen(
     onPlayNow: (SongItem) -> Unit,
     onAddToQueue: (SongItem) -> Unit,
     onToggleFavorite: (SongItem) -> Unit = {},
+    showQueueButton: Boolean = true,
     onSearchFieldFocusChange: (Boolean) -> Unit = {}
 ) {
     var showTvKeyboard by remember { mutableStateOf(false) }
@@ -236,7 +237,8 @@ fun SearchScreen(
                         onPlayNow = onPlayNow,
                         onAddToQueue = onAddToQueue,
                         isFavorite = song.videoId in favoriteIds,
-                        onToggleFavorite = onToggleFavorite
+                        onToggleFavorite = onToggleFavorite,
+                        showQueueButton = showQueueButton
                     )
                 }
             }

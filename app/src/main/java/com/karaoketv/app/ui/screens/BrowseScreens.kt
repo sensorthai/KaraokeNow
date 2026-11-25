@@ -479,7 +479,8 @@ fun FavoritesScreen(
     favorites: List<SongItem>,
     onPlayNow: (SongItem) -> Unit,
     onAddToQueue: (SongItem) -> Unit,
-    onToggleFavorite: (SongItem) -> Unit
+    onToggleFavorite: (SongItem) -> Unit,
+    showQueueButton: Boolean = true
 ) {
     Column(
         modifier = Modifier
@@ -520,7 +521,8 @@ fun FavoritesScreen(
                         onPlayNow = onPlayNow,
                         onAddToQueue = onAddToQueue,
                         isFavorite = true,
-                        onToggleFavorite = onToggleFavorite
+                        onToggleFavorite = onToggleFavorite,
+                        showQueueButton = showQueueButton
                     )
                 }
             }

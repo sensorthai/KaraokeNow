@@ -240,7 +240,9 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                         }
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        TvDestination.entries.forEach { destination ->
+                        TvDestination.entries
+                            .filter { viewModel.isQueueEnabled || it != TvDestination.QUEUE }
+                            .forEach { destination ->
                             val badge = if (destination == TvDestination.QUEUE && activeQueue.isNotEmpty()) {
                                 " (${activeQueue.size})"
                             } else ""
@@ -301,6 +303,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                                 catalogSongs.take(40)
                             },
                             hasPlayStats = topPlayedSongs.isNotEmpty(),
+                            showQueueButton = viewModel.isQueueEnabled,
                             styles = dynamicStyles,
                             artists = dynamicArtists,
                             favoriteIds = favoriteIds,
@@ -332,6 +335,7 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                             onPlayNow = { viewModel.playNow(it) },
                             onAddToQueue = { viewModel.addToQueue(it) },
                             onToggleFavorite = { viewModel.toggleFavorite(it) },
+                            showQueueButton = viewModel.isQueueEnabled,
                             onSearchFieldFocusChange = { viewModel.isSearchTextFieldFocused = it }
                         )
 
@@ -365,7 +369,8 @@ fun KaraokeTvApp(viewModel: KaraokeViewModel = viewModel()) {
                             favorites = favorites,
                             onPlayNow = { viewModel.playNow(it) },
                             onAddToQueue = { viewModel.addToQueue(it) },
-                            onToggleFavorite = { viewModel.toggleFavorite(it) }
+                            onToggleFavorite = { viewModel.toggleFavorite(it) },
+                            showQueueButton = viewModel.isQueueEnabled
                         )
 
                         TvDestination.QUEUE -> QueueScreen(

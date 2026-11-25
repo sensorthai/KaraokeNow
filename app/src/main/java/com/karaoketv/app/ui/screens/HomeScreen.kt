@@ -42,6 +42,7 @@ fun HomeScreen(
     queueCount: Int,
     popularSongs: List<SongItem>,
     hasPlayStats: Boolean = false,
+    showQueueButton: Boolean = true,
     styles: List<MusicStyle>,
     artists: List<ArtistProfile>,
     favoriteIds: Set<String> = emptySet(),
@@ -78,7 +79,8 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = if (currentPlaying != null) {
-                            "${currentPlaying.artistName} • คิวรอเล่น $queueCount เพลง"
+                            if (showQueueButton) "${currentPlaying.artistName} • คิวรอเล่น $queueCount เพลง"
+                            else currentPlaying.artistName
                         } else {
                             "ค้นหาจาก YouTube ด้วยชื่อเพลง รายชื่อเพลง นักร้อง หรือสไตล์เพลง"
                         },
@@ -109,7 +111,8 @@ fun HomeScreen(
                         onPlayNow = onPlayNow,
                         onAddToQueue = onAddToQueue,
                         isFavorite = song.videoId in favoriteIds,
-                        onToggleFavorite = onToggleFavorite
+                        onToggleFavorite = onToggleFavorite,
+                        showQueueButton = showQueueButton
                     )
                 }
             }

@@ -49,6 +49,8 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
 
     val mdnsUrl: String = "http://karaokenow.local:8888"
 
+    val isQueueEnabled: Boolean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+
     val activeQueue: StateFlow<List<QueueItemEntity>> = dao.observeActiveQueue()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -296,6 +298,10 @@ class KaraokeViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun addToQueue(song: SongItem) {
+        if (!isQueueEnabled) {
+            playNow(song)
+            return
+        }
         viewModelScope.launch {
             val current = currentPlaying.value
             val entity = song.toQueueEntity()
